@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "LudumDare53/Components/PlayerDeathSequenceComponent.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -28,6 +29,7 @@ APlayerCharacter::APlayerCharacter()
 	HitPoints = CreateDefaultSubobject<UHitPointsComponent>("HitPoints");
 	LivesComponent = CreateDefaultSubobject<ULivesComponent>("Lives");
 	MeatCounter = CreateDefaultSubobject<UMeatCounterComponent>("MeatCounter");
+	DeathSequence = CreateDefaultSubobject<UPlayerDeathSequenceComponent>("DeathSequence");
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -43,6 +45,8 @@ void APlayerCharacter::BeginPlay()
 
 	HitPoints->OnValueZero.AddDynamic(this, &APlayerCharacter::DecreaseLives);
 	MeatCounter->OnValueIncreased.AddDynamic(this, &APlayerCharacter::HandleMeatCounterIncrease);
+	LivesComponent->OnValueDecreased.AddDynamic(this, &APlayerCharacter::HandleLivesDecrease);
+	DeathSequence->OnRespawnFinished.AddDynamic(this, &APlayerCharacter::HandleRespawn);
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -119,4 +123,50 @@ void APlayerCharacter::HandleMeatCounterIncrease(const int32 NewValue, const int
 	{
 		HitPoints->IncreaseValue(1);
 	}
+}
+
+void APlayerCharacter::HandleLivesDecrease(const int32 NewValue, const int32 Amount)
+{
+	DeathSequence->SetIsGameOver(LivesComponent->GetValue() == 0);
+	DeathSequence->StartDeathSequence();
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ToggleInput(false);
+}
+
+void APlayerCharacter::HandleRespawn()
+{
+	if (DeathSequence->GetIsGameOver())
+	{
+		return;
+	}
+
+	HitPoints->IncreaseValue(HitPoints->GetMaxValue());
+	ToggleInput(true);
+}
+
+float APlayerCharacter::TakeDamage(float DamageAmount,
+                                   FDamageEvent const& DamageEvent,
+                                   AController* EventInstigator,
+                                   AActor* DamageCauser)
+{
+	HitPoints->DecreaseValue(DamageAmount);
+
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
+void APlayerCharacter::FellOutOfWorld(const UDamageType& dmgType)
+{
+	HitPoints->DecreaseValue(HitPoints->GetValue());
+}
+
+void APlayerCharacter::ToggleInput(const bool bIsEnabled)
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+
+	if (!PlayerController)
+	{
+		return;
+	}
+
+	bIsEnabled ? EnableInput(PlayerController) : DisableInput(PlayerController);
 }
