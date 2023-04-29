@@ -9,7 +9,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"AIModule"
 			]
 		}
 	],
@@ -258,6 +259,7 @@
 	],
 	"TargetPlatforms": [
 		"Linux",
-		"Windows"
+		"Windows",
+		"HoloLens"
 	]
 }
