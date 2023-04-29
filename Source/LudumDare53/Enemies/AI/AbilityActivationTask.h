@@ -6,6 +6,8 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "AbilityActivationTask.generated.h"
 
+class UAbilityComponent;
+
 UCLASS()
 class LUDUMDARE53_API UAbilityActivationTask : public UBTTaskNode
 {
@@ -17,4 +19,7 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
 	FBlackboardKeySelector PlayerActorKey;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	TSubclassOf<UAbilityComponent> AbilityClass;
 };
