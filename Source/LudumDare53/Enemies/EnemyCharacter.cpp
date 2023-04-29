@@ -7,7 +7,6 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "LudumDare53/Components/HitPointsComponent.h"
-#include "LudumDare53/Components/LivesComponent.h"
 
 AEnemyCharacter::AEnemyCharacter()
 {
