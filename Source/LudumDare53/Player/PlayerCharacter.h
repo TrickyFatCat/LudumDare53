@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "PlayerCharacter.generated.h"
 
+class UPlayerDeathSequenceComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UHitPointsComponent;
@@ -14,6 +15,8 @@ class ULivesComponent;
 class UMeatCounterComponent;
 class UInputMappingContext;
 class UInputAction;
+class UInteractionQueueComponent;
+class UEggManagerComponent;
 
 UCLASS()
 class LUDUMDARE53_API APlayerCharacter : public ACharacter
@@ -44,8 +47,17 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULivesComponent> LivesComponent = nullptr;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly,  Category="Components", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UMeatCounterComponent> MeatCounterComponent = nullptr;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMeatCounterComponent> MeatCounter = nullptr;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UPlayerDeathSequenceComponent> DeathSequence = nullptr;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInteractionQueueComponent> InteractionQueue = nullptr;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UEggManagerComponent> EggManager = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* MappingContext;
@@ -59,6 +71,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess))
 	FVector CameraSensitivity{0.f, 25.f, 25.f};
 
@@ -71,4 +86,21 @@ private:
 
 	UFUNCTION()
 	void HandleMeatCounterIncrease(const int32 NewValue, const int32 Amount);
+
+	UFUNCTION()
+	void HandleLivesDecrease(const int32 NewValue, const int32 Amount);
+
+	UFUNCTION()
+	void HandleRespawn();
+
+	virtual float TakeDamage(float DamageAmount,
+	                         FDamageEvent const& DamageEvent,
+	                         AController* EventInstigator,
+	                         AActor* DamageCauser) override;
+
+	virtual void FellOutOfWorld(const UDamageType& dmgType) override;
+	
+	void ToggleInput(const bool bIsEnabled);
+
+	void StartInteraction();
 };

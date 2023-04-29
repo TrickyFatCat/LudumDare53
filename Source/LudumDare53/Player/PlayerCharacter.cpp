@@ -11,12 +11,15 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "InteractionQueueComponent.h"
+#include "LudumDare53/Components/EggManagerComponent.h"
+#include "LudumDare53/Components/PlayerDeathSequenceComponent.h"
 
 
 APlayerCharacter::APlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
 	SpringArm->SetupAttachment(GetRootComponent());
 	SpringArm->bUsePawnControlRotation = true;
@@ -27,12 +30,15 @@ APlayerCharacter::APlayerCharacter()
 
 	HitPoints = CreateDefaultSubobject<UHitPointsComponent>("HitPoints");
 	LivesComponent = CreateDefaultSubobject<ULivesComponent>("Lives");
-	MeatCounterComponent = CreateDefaultSubobject<UMeatCounterComponent>("MeatCounter");
-	
+	MeatCounter = CreateDefaultSubobject<UMeatCounterComponent>("MeatCounter");
+	DeathSequence = CreateDefaultSubobject<UPlayerDeathSequenceComponent>("DeathSequence");
+	InteractionQueue = CreateDefaultSubobject<UInteractionQueueComponent>("InteractionQueue");
+	EggManager = CreateDefaultSubobject<UEggManagerComponent>("EggManager");
+
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-	
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 256.f, 0.f);
 }
@@ -42,7 +48,9 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	HitPoints->OnValueZero.AddDynamic(this, &APlayerCharacter::DecreaseLives);
-	MeatCounterComponent->OnValueIncreased.AddDynamic(this, &APlayerCharacter::HandleMeatCounterIncrease);
+	MeatCounter->OnValueIncreased.AddDynamic(this, &APlayerCharacter::HandleMeatCounterIncrease);
+	LivesComponent->OnValueDecreased.AddDynamic(this, &APlayerCharacter::HandleLivesDecrease);
+	DeathSequence->OnRespawnFinished.AddDynamic(this, &APlayerCharacter::HandleRespawn);
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -75,6 +83,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+
+		//Interact
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APlayerCharacter::StartInteraction);
 	}
 }
 
@@ -111,10 +122,63 @@ void APlayerCharacter::DecreaseLives()
 
 void APlayerCharacter::HandleMeatCounterIncrease(const int32 NewValue, const int32 Amount)
 {
-	if (HitPoints->GetValue() >= HitPoints->GetMaxValue())
+	if (NewValue >= MeatCounter->GetMaxValue())
+	{
+		LivesComponent->IncreaseValue(1);
+	}
+	if (HitPoints->GetValue() < HitPoints->GetMaxValue())
+	{
+		HitPoints->IncreaseValue(1);
+	}
+}
+
+void APlayerCharacter::HandleLivesDecrease(const int32 NewValue, const int32 Amount)
+{
+	DeathSequence->SetIsGameOver(LivesComponent->GetValue() == 0);
+	DeathSequence->StartDeathSequence();
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ToggleInput(false);
+}
+
+void APlayerCharacter::HandleRespawn()
+{
+	if (DeathSequence->GetIsGameOver())
 	{
 		return;
 	}
 
-	HitPoints->IncreaseValue(1);
+	HitPoints->IncreaseValue(HitPoints->GetMaxValue());
+	ToggleInput(true);
+}
+
+float APlayerCharacter::TakeDamage(float DamageAmount,
+                                   FDamageEvent const& DamageEvent,
+                                   AController* EventInstigator,
+                                   AActor* DamageCauser)
+{
+	HitPoints->DecreaseValue(DamageAmount);
+
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
+void APlayerCharacter::FellOutOfWorld(const UDamageType& dmgType)
+{
+	HitPoints->DecreaseValue(HitPoints->GetValue());
+}
+
+void APlayerCharacter::ToggleInput(const bool bIsEnabled)
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+
+	if (!PlayerController)
+	{
+		return;
+	}
+
+	bIsEnabled ? EnableInput(PlayerController) : DisableInput(PlayerController);
+}
+
+void APlayerCharacter::StartInteraction()
+{
+	InteractionQueue->StartInteraction();
 }
