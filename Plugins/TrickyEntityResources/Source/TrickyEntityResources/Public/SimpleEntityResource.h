@@ -32,7 +32,7 @@ struct FSimpleResourceData
 	UPROPERTY(EditAnywhere,
 		BlueprintReadWrite,
 		Category="SimpleEntityResource",
-		meta=(EditCondition="bCustomInitialValue", ClampMin="0"))
+		meta=(EditCondition="bUseCustomInitialValue", ClampMin="0"))
 	int32 InitialValue = 100;
 };
 

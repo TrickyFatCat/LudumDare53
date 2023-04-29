@@ -6,7 +6,7 @@
 #include "EnemyController.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "LudumDare53/Components/LivesComponent.h"
+#include "LudumDare53/Components/HitPointsComponent.h"
 
 AEnemyCharacter::AEnemyCharacter()
 {
@@ -14,7 +14,7 @@ AEnemyCharacter::AEnemyCharacter()
 	AutoPossessAI = EAutoPossessAI::Disabled;
 	AIControllerClass = AEnemyController::StaticClass();
 
-	LivesComponent = CreateDefaultSubobject<ULivesComponent>("Lives");
+	HitPointComponent = CreateDefaultSubobject<UHitPointsComponent>("HP");
 
 	if (GetCharacterMovement())
 	{

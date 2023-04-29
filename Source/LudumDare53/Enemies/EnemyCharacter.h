@@ -6,8 +6,8 @@
 #include "GameFramework/Character.h"
 #include "EnemyCharacter.generated.h"
 
+class UHitPointsComponent;
 class UBehaviorTree;
-class ULivesComponent;
 
 UCLASS()
 class LUDUMDARE53_API AEnemyCharacter : public ACharacter
@@ -28,7 +28,7 @@ protected:
 	TObjectPtr<UBehaviorTree> BehaviorTreeAsset;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Components")
-	TObjectPtr<ULivesComponent> LivesComponent = nullptr;
+	TObjectPtr<UHitPointsComponent> HitPointComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animations")
 	TObjectPtr<UAnimMontage> DeathMontage = nullptr;
