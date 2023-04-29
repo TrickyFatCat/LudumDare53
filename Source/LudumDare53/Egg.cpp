@@ -4,6 +4,7 @@
 #include "Egg.h"
 
 #include "SphereInteractionComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/EggHitPointsComponent.h"
 
 
@@ -16,6 +17,10 @@ AEgg::AEgg()
 	InteractionTrigger = CreateDefaultSubobject<USphereInteractionComponent>("InteractionTrigger");
 	InteractionTrigger->SetupAttachment(GetRootComponent());
 	InteractionTrigger->SetInteractionMessage(this, "Pickup");
+
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+
 }
 
 void AEgg::BeginPlay()

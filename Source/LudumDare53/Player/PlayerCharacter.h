@@ -16,6 +16,7 @@ class UMeatCounterComponent;
 class UInputMappingContext;
 class UInputAction;
 class UInteractionQueueComponent;
+class UEggManagerComponent;
 
 UCLASS()
 class LUDUMDARE53_API APlayerCharacter : public ACharacter
@@ -53,7 +54,10 @@ private:
 	TObjectPtr<UPlayerDeathSequenceComponent> DeathSequence = nullptr;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInteractionQueueComponent> InteractionQueue = nullptr;	
+	TObjectPtr<UInteractionQueueComponent> InteractionQueue = nullptr;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UEggManagerComponent> EggManager = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* MappingContext;
@@ -69,7 +73,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess))
 	FVector CameraSensitivity{0.f, 25.f, 25.f};
 

@@ -12,6 +12,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InteractionQueueComponent.h"
+#include "LudumDare53/Components/EggManagerComponent.h"
 #include "LudumDare53/Components/PlayerDeathSequenceComponent.h"
 
 
@@ -32,6 +33,7 @@ APlayerCharacter::APlayerCharacter()
 	MeatCounter = CreateDefaultSubobject<UMeatCounterComponent>("MeatCounter");
 	DeathSequence = CreateDefaultSubobject<UPlayerDeathSequenceComponent>("DeathSequence");
 	InteractionQueue = CreateDefaultSubobject<UInteractionQueueComponent>("InteractionQueue");
+	EggManager = CreateDefaultSubobject<UEggManagerComponent>("EggManager");
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
