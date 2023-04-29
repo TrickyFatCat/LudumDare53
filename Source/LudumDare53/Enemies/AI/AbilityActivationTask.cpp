@@ -12,10 +12,12 @@ EBTNodeResult::Type UAbilityActivationTask::ExecuteTask(UBehaviorTreeComponent& 
 	const auto Blackboard = OwnerComp.GetBlackboardComponent();
 
 	const auto HasAim = Blackboard && Blackboard->GetValueAsObject(PlayerActorKey.SelectedKeyName);
-	if (Controller) {
-		const auto Ability = Controller->GetPawn()->FindComponentByClass<UAbilityComponent>();
+	if (Controller)
+	{
+		const auto Component = Controller->GetPawn()->FindComponentByClass(AbilityClass);
+		const auto Ability = Cast<UAbilityComponent>(Component);
 		if (Ability) HasAim ? Ability->ActivateAbility() : Ability->DeactivateAbility();
 	}
-	
+
 	return Super::ExecuteTask(OwnerComp, NodeMemory);
 }
