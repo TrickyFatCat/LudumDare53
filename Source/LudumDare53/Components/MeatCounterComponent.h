@@ -14,4 +14,6 @@ class LUDUMDARE53_API UMeatCounterComponent : public USimpleResourceComponent
 
 public:
 	UMeatCounterComponent();
+
+	virtual bool IncreaseValue(const int32 Amount, const bool bClampToMax) override;
 };
