@@ -21,6 +21,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="Character")
 	void OnDeathFinished();
 
+	UBehaviorTree* GetBehaviorTree();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="AI")
 	TObjectPtr<UBehaviorTree> BehaviorTreeAsset;

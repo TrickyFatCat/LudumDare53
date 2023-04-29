@@ -24,6 +24,11 @@ AEnemyCharacter::AEnemyCharacter()
 	}
 }
 
+UBehaviorTree* AEnemyCharacter::GetBehaviorTree()
+{
+	return BehaviorTreeAsset;
+}
+
 void AEnemyCharacter::PlayDeathMontage(AController* DeathInstigator, AActor* DeathCauser, const UDamageType* DamageType)
 {
 	GetCapsuleComponent()->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);

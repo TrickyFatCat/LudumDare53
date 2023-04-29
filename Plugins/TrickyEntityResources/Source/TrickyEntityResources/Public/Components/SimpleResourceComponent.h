@@ -62,7 +62,7 @@ public:
 	 * Increases value. If ClampToMax == true, it'll be clamped to MaxValue.
 	 */
 	UFUNCTION(BlueprintCallable, Category="TrickyEntityResources|SimpleResourceComponent")
-	bool IncreaseValue(const int32 Amount, const bool bClampToMax = true);
+	virtual bool IncreaseValue(const int32 Amount, const bool bClampToMax = true);
 
 	/**
 	 * Decreases MaxValue. If ClampValue == true and Value > MaxValue, Value will be clamped to MaxValue.
@@ -94,7 +94,7 @@ public:
 	UFUNCTION(BlueprintPure, Category="TrickyEntityResources|SimpleResourceComponent")
 	float GetNormalisedValue() const;
 	
-private:
+protected:
 	UPROPERTY()
 	TObjectPtr<USimpleEntityResource> ResourceObject = nullptr;
 
