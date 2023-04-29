@@ -38,13 +38,13 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category="Components")
 	TObjectPtr<UCameraComponent> Camera = nullptr;
 
-	UPROPERTY(VisibleDefaultsOnly, Category="Components")
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UHitPointsComponent> HitPoints = nullptr;
 
-	UPROPERTY(VisibleDefaultsOnly, Category="Components")
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULivesComponent> LivesComponent = nullptr;
 
-	UPROPERTY(VisibleDefaultsOnly, Category="Components")
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly,  Category="Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMeatCounterComponent> MeatCounterComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))

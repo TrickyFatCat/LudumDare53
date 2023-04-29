@@ -101,7 +101,6 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	{
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
-		UE_LOG(LogTemp, Warning, TEXT("%.2f"), LookAxisVector.Y);
 	}
 }
 
