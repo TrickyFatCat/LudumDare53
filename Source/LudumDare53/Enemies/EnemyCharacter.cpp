@@ -37,8 +37,7 @@ void AEnemyCharacter::BeginPlay()
 void AEnemyCharacter::Die()
 {
 	if (const auto AIController = Cast<AEnemyController>(GetController())) AIController->BrainComponent->Cleanup();
-
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	DeathSequenceComponent->StartDeathSequence();
 }
