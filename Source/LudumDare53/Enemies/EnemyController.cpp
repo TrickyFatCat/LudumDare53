@@ -25,6 +25,7 @@ void AEnemyController::OnPossess(APawn* InPawn)
 	if (Char == nullptr) return;
 
 	RunBehaviorTree(Char->GetBehaviorTree());
+	
 }
 
 void AEnemyController::Tick(float DeltaTime)
