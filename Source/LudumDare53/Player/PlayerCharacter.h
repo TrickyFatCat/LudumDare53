@@ -45,7 +45,7 @@ private:
 	TObjectPtr<ULivesComponent> LivesComponent = nullptr;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly,  Category="Components", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UMeatCounterComponent> MeatCounterComponent = nullptr;
+	TObjectPtr<UMeatCounterComponent> MeatCounter = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* MappingContext;

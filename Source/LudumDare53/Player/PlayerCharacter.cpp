@@ -16,7 +16,7 @@
 APlayerCharacter::APlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
 	SpringArm->SetupAttachment(GetRootComponent());
 	SpringArm->bUsePawnControlRotation = true;
@@ -27,12 +27,12 @@ APlayerCharacter::APlayerCharacter()
 
 	HitPoints = CreateDefaultSubobject<UHitPointsComponent>("HitPoints");
 	LivesComponent = CreateDefaultSubobject<ULivesComponent>("Lives");
-	MeatCounterComponent = CreateDefaultSubobject<UMeatCounterComponent>("MeatCounter");
-	
+	MeatCounter = CreateDefaultSubobject<UMeatCounterComponent>("MeatCounter");
+
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-	
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 256.f, 0.f);
 }
@@ -42,7 +42,7 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	HitPoints->OnValueZero.AddDynamic(this, &APlayerCharacter::DecreaseLives);
-	MeatCounterComponent->OnValueIncreased.AddDynamic(this, &APlayerCharacter::HandleMeatCounterIncrease);
+	MeatCounter->OnValueIncreased.AddDynamic(this, &APlayerCharacter::HandleMeatCounterIncrease);
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -111,10 +111,12 @@ void APlayerCharacter::DecreaseLives()
 
 void APlayerCharacter::HandleMeatCounterIncrease(const int32 NewValue, const int32 Amount)
 {
-	if (HitPoints->GetValue() >= HitPoints->GetMaxValue())
+	if (NewValue >= MeatCounter->GetMaxValue())
 	{
-		return;
+		LivesComponent->IncreaseValue(1);
 	}
-
-	HitPoints->IncreaseValue(1);
+	if (HitPoints->GetValue() < HitPoints->GetMaxValue())
+	{
+		HitPoints->IncreaseValue(1);
+	}
 }
