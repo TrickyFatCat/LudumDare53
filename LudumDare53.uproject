@@ -255,5 +255,9 @@
 			"Name": "TrickyStatusEffects",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Linux",
+		"Windows"
 	]
 }
