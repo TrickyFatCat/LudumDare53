@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "EnemyCharacter.generated.h"
 
+class UDeathSequenceComponent;
 class UHitPointsComponent;
 class UBehaviorTree;
 
@@ -17,22 +18,29 @@ class LUDUMDARE53_API AEnemyCharacter : public ACharacter
 
 public:
 	AEnemyCharacter();
+	UFUNCTION()
+	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="Character")
-	void OnDeathFinished();
-
-	UBehaviorTree* GetBehaviorTree();
+	UBehaviorTree* GetBehaviorTree() const { return BehaviorTreeAsset; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="AI")
 	TObjectPtr<UBehaviorTree> BehaviorTreeAsset;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Components")
-	TObjectPtr<UHitPointsComponent> HitPointComponent = nullptr;
+	TObjectPtr<UHitPointsComponent> HitPointComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animations")
-	TObjectPtr<UAnimMontage> DeathMontage = nullptr;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DeathSequence")
+	TObjectPtr<UDeathSequenceComponent> DeathSequenceComponent;
 
+private:
 	UFUNCTION()
-	void PlayDeathMontage(AController* DeathInstigator, AActor* DeathCauser, const UDamageType* DamageType);
+	void Die();
+
+	virtual float TakeDamage(
+		float DamageAmount,
+		FDamageEvent const& DamageEvent,
+		AController* EventInstigator,
+		AActor* DamageCauser
+	) override;
 };
