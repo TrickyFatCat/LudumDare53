@@ -11,11 +11,13 @@ UMeatCounterComponent::UMeatCounterComponent()
 
 bool UMeatCounterComponent::IncreaseValue(const int32 Amount, const bool bClampToMax)
 {
-	if (Super::IncreaseValue(Amount, bClampToMax) && ResourceData.Value >= ResourceData.MaxValue)
+	const bool Result = Super::IncreaseValue(Amount, bClampToMax);
+	
+	if (ResourceData.Value >= ResourceData.MaxValue)
 	{
 		DecreaseValue(ResourceData.MaxValue);
 		return true;
 	}
 
-	return false;
+	return Result;
 }
