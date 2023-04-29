@@ -42,6 +42,8 @@ void UDeathSequenceComponent::StartDeathSequence()
 		return;
 	}
 
+	Character->StopAnimMontage();
+	Character->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Character->PlayAnimMontage(DeathAnimation);
 	OnDeathSequenceStarted.Broadcast();
 }
@@ -53,6 +55,7 @@ void UDeathSequenceComponent::FinishDeathSequence(UAnimMontage* AnimMontage, con
 		return;
 	}
 
+	Character->GetMesh()->bPauseAnims = true;
 	HandleDeathSequenceFinish();
 	OnDeathSequenceFinished.Broadcast();
 }

@@ -28,6 +28,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnDeathSequenceFinishedSignature OnDeathSequenceFinished;
 	
+	UFUNCTION()
+	void StartDeathSequence();
+	
 protected:
 	virtual void InitializeComponent() override;
 	 
@@ -41,9 +44,6 @@ protected:
 
 	UPROPERTY()
 	UAnimInstance* AnimInstance = nullptr;
-
-	UFUNCTION(BlueprintCallable)
-	void StartDeathSequence();
 
 	UFUNCTION()
 	void FinishDeathSequence(UAnimMontage* AnimMontage, const bool bIsInterrupted);
