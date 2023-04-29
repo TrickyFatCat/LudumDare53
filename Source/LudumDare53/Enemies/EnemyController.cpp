@@ -4,10 +4,7 @@
 #include "EnemyController.h"
 
 #include "EnemyCharacter.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "LudumDare53/Components/EnemyPerceptionComponent.h"
-#include "LudumDare53/Components/HitPointsComponent.h"
-#include "LudumDare53/Components/LivesComponent.h"
 #include "Navigation/CrowdFollowingComponent.h"
 
 AEnemyController::AEnemyController(const FObjectInitializer& ObjectInitializer)
@@ -25,19 +22,4 @@ void AEnemyController::OnPossess(APawn* InPawn)
 	if (Char == nullptr) return;
 
 	RunBehaviorTree(Char->GetBehaviorTree());
-	
-}
-
-void AEnemyController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	SetFocus(GetFocusOnActor());
-}
-
-AActor* AEnemyController::GetFocusOnActor() const
-{
-	if (GetPawn()->FindComponentByClass<UHitPointsComponent>()->GetValue() == 0) return nullptr;
-	if (GetBlackboardComponent() == nullptr) return nullptr;
-	return Cast<AActor>(GetBlackboardComponent()->GetValueAsObject(FocusOnKeyName));
 }
