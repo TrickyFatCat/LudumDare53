@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "InteractionQueueComponent.h"
 #include "LudumDare53/Components/PlayerDeathSequenceComponent.h"
 
 
@@ -30,6 +31,7 @@ APlayerCharacter::APlayerCharacter()
 	LivesComponent = CreateDefaultSubobject<ULivesComponent>("Lives");
 	MeatCounter = CreateDefaultSubobject<UMeatCounterComponent>("MeatCounter");
 	DeathSequence = CreateDefaultSubobject<UPlayerDeathSequenceComponent>("DeathSequence");
+	InteractionQueue = CreateDefaultSubobject<UInteractionQueueComponent>("InteractionQueue");
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -79,6 +81,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+
+		//Interact
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APlayerCharacter::StartInteraction);
 	}
 }
 
@@ -169,4 +174,9 @@ void APlayerCharacter::ToggleInput(const bool bIsEnabled)
 	}
 
 	bIsEnabled ? EnableInput(PlayerController) : DisableInput(PlayerController);
+}
+
+void APlayerCharacter::StartInteraction()
+{
+	InteractionQueue->StartInteraction();
 }
