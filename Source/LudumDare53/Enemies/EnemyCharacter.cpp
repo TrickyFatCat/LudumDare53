@@ -3,10 +3,12 @@
 
 #include "EnemyCharacter.h"
 
+#include "BrainComponent.h"
 #include "EnemyController.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "LudumDare53/Components/LivesComponent.h"
+#include "LudumDare53/Components/DeathSequenceComponent.h"
+#include "LudumDare53/Components/HitPointsComponent.h"
 
 AEnemyCharacter::AEnemyCharacter()
 {
@@ -14,7 +16,8 @@ AEnemyCharacter::AEnemyCharacter()
 	AutoPossessAI = EAutoPossessAI::Disabled;
 	AIControllerClass = AEnemyController::StaticClass();
 
-	LivesComponent = CreateDefaultSubobject<ULivesComponent>("Lives");
+	HitPointComponent = CreateDefaultSubobject<UHitPointsComponent>("HP");
+	DeathSequenceComponent = CreateDefaultSubobject<UDeathSequenceComponent>("DeathSequence");
 
 	if (GetCharacterMovement())
 	{
@@ -24,15 +27,28 @@ AEnemyCharacter::AEnemyCharacter()
 	}
 }
 
-UBehaviorTree* AEnemyCharacter::GetBehaviorTree()
+void AEnemyCharacter::BeginPlay()
 {
-	return BehaviorTreeAsset;
+	Super::BeginPlay();
+
+	HitPointComponent->OnValueZero.AddDynamic(this, &AEnemyCharacter::Die);
 }
 
-void AEnemyCharacter::PlayDeathMontage(AController* DeathInstigator, AActor* DeathCauser, const UDamageType* DamageType)
+void AEnemyCharacter::Die()
 {
-	GetCapsuleComponent()->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-	GetMesh()->SetCollisionResponseToChannels(ECR_Ignore);
-	PlayAnimMontage(DeathMontage);
+	if (const auto AIController = Cast<AEnemyController>(GetController())) AIController->BrainComponent->Cleanup();
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	DeathSequenceComponent->StartDeathSequence();
+}
+
+float AEnemyCharacter::TakeDamage(
+	float DamageAmount,
+	FDamageEvent const& DamageEvent,
+	AController* EventInstigator,
+	AActor* DamageCauser
+)
+{
+	HitPointComponent->DecreaseValue(DamageAmount);
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
