@@ -51,6 +51,7 @@ void APlayerCharacter::BeginPlay()
 	MeatCounter->OnValueIncreased.AddDynamic(this, &APlayerCharacter::HandleMeatCounterIncrease);
 	LivesComponent->OnValueDecreased.AddDynamic(this, &APlayerCharacter::HandleLivesDecrease);
 	DeathSequence->OnRespawnFinished.AddDynamic(this, &APlayerCharacter::HandleRespawn);
+	DefaultGravityScale = GetCharacterMovement()->GravityScale;
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -65,6 +66,16 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (GetCharacterMovement()->IsFalling())
+	{
+		GetCharacterMovement()->GravityScale = DefaultGravityScale + GravityScaleDelta * (GetCharacterMovement()->
+			Velocity.Z < 0.0);
+	}
+	else
+	{
+		GetCharacterMovement()->GravityScale = DefaultGravityScale;
+	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -75,7 +86,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		//Moving
@@ -85,7 +96,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 
 		//Interact
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APlayerCharacter::StartInteraction);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this,
+		                                   &APlayerCharacter::StartInteraction);
 	}
 }
 
@@ -181,4 +193,24 @@ void APlayerCharacter::ToggleInput(const bool bIsEnabled)
 void APlayerCharacter::StartInteraction()
 {
 	InteractionQueue->StartInteraction();
+}
+
+void APlayerCharacter::StopJumping()
+{
+	Super::StopJumping();
+	
+	const float VelocityZ = GetCharacterMovement()->Velocity.Z;
+	
+	if (!bJumpWasStopped && VelocityZ > GetCharacterMovement()->JumpZVelocity * StopJumpVelocityFactor)
+	{
+		GetCharacterMovement()->Velocity.Z = FMath::Max(VelocityZ * StopJumpVelocityFactor, MinJumpVelocity);
+		bJumpWasStopped = true;
+	}
+}
+
+void APlayerCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	bJumpWasStopped = false;
 }
