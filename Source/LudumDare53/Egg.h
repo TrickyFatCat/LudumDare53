@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "InteractionInterface.h"
-#include "GameFramework/Character.h"
+#include "GameFramework/Actor.h"
 #include "Egg.generated.h"
 
-class UCharacterMovementComponent;
+// class UCharacterMovementComponent;
+class UProjectileMovementComponent;
 class UEggHitPointsComponent;
 class UCapsuleComponent;
 class UStaticMeshComponent;
 class USphereInteractionComponent;
 class UEggManagerComponent;
-class UFollowAnimationComponent;
 
 UCLASS()
-class LUDUMDARE53_API AEgg : public ACharacter, public IInteractionInterface
+class LUDUMDARE53_API AEgg : public AActor, public IInteractionInterface
 {
 	GENERATED_BODY()
 
@@ -27,20 +27,30 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UCapsuleComponent> CapsuleComponent = nullptr;
+	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UStaticMeshComponent> Mesh = nullptr;
+	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UProjectileMovementComponent> MovementComponent = nullptr;
+	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UEggHitPointsComponent> HitPoints = nullptr;
 	
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<USphereInteractionComponent> InteractionTrigger = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	FName Socket = NAME_None;
+	FName SocketName = NAME_None;
 
 	virtual bool FinishInteraction_Implementation(AActor* OtherActor) override;
 
 	void ToggleCollision(const bool bIsEnabled) const;
 
-public:
-	void Attach(AActor* OtherActor, const FName& SocketName);
+	void Attach(const AActor* OtherActor);
 
-	void Throw(const FVector& Power);
+public:
+
+	void Throw(const FVector& Direction, const float Power);
 };
