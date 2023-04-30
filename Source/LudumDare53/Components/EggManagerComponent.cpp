@@ -28,6 +28,7 @@ void UEggManagerComponent::BeginPlay()
 	if (Egg)
 	{
 		AttachEgg();
+		Egg->SetEggManager(this);
 	}
 }
 
@@ -44,6 +45,7 @@ void UEggManagerComponent::AttachEgg()
 	}
 
 	Egg->AttachToComponent(TargetMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+	Egg->ToggleCollision(false);
 }
 
 void UEggManagerComponent::ThrowEgg()
@@ -52,4 +54,7 @@ void UEggManagerComponent::ThrowEgg()
 	{
 		return;
 	}
+
+	Egg->ToggleCollision(true);
+	Egg->LaunchCharacter(GetOwner()->GetActorForwardVector() * 1000, true, true);
 }
