@@ -18,5 +18,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 MeatAmount = 1.f;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bClampToMax = true;
+	
 	virtual bool ActivateEffect_Implementation(AActor* OtherActor) override;
 };
