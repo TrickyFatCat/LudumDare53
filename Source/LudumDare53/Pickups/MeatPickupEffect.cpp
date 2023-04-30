@@ -19,5 +19,5 @@ bool UMeatPickupEffect::ActivateEffect_Implementation(AActor* OtherActor)
 		return false;
 	}
 
-	return MeatCounter->IncreaseValue(MeatAmount, true);
+	return MeatCounter->IncreaseValue(MeatAmount, bClampToMax);
 }

@@ -29,7 +29,7 @@ public:
 	FOnDeathSequenceFinishedSignature OnDeathSequenceFinished;
 	
 	UFUNCTION()
-	void StartDeathSequence();
+	void StartDeathSequence(const bool bEggIsDead = false);
 	
 protected:
 	virtual void InitializeComponent() override;
@@ -39,6 +39,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UAnimMontage> DeathAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UAnimMontage> EggDeathAnimation;
+	
 	UPROPERTY()
 	ACharacter* Character = nullptr;
 

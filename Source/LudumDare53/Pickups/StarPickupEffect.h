@@ -4,22 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "PickupEffectType.h"
-#include "MeatPickupEffect.generated.h"
+#include "StarPickupEffect.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LUDUMDARE53_API UMeatPickupEffect : public UPickupEffectType
+class LUDUMDARE53_API UStarPickupEffect : public UPickupEffectType
 {
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 MeatAmount = 1.f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bClampToMax = true;
-	
+	UPROPERTY(EditAnywhere)
+	int32 StarsAmount = 1;
+
 	virtual bool ActivateEffect_Implementation(AActor* OtherActor) override;
 };
