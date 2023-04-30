@@ -33,7 +33,6 @@ AEgg::AEgg()
 	InteractionTrigger = CreateDefaultSubobject<USphereInteractionComponent>("InteractionTrigger");
 	InteractionTrigger->SetupAttachment(GetRootComponent());
 	InteractionTrigger->SetInteractionMessage(this, "Pickup");
-
 }
 
 void AEgg::BeginPlay()
@@ -51,6 +50,8 @@ void AEgg::BeginPlay()
 			EggManager->SetEgg(this);
 		}
 	}
+
+	MovementComponent->OnProjectileBounce.AddDynamic(this, &AEgg::HandleLanding);
 }
 
 bool AEgg::FinishInteraction_Implementation(AActor* OtherActor)
@@ -80,8 +81,12 @@ void AEgg::ToggleCollision(const bool bIsEnabled) const
 		                                                 : ECollisionEnabled::NoCollision;
 	MovementComponent->bSimulationEnabled = bIsEnabled;
 	CapsuleComponent->SetCollisionEnabled(CollisionEnabled);
-	InteractionTrigger->SetCollisionEnabled(CollisionEnabled);
 	Mesh->SetCollisionEnabled(CollisionEnabled);
+
+	if (!bIsEnabled)
+	{
+		InteractionTrigger->SetCollisionEnabled(CollisionEnabled);
+	}
 }
 
 void AEgg::Attach(const AActor* OtherActor)
@@ -104,6 +109,11 @@ void AEgg::Attach(const AActor* OtherActor)
 	AttachToComponent(TargetMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
 }
 
+void AEgg::HandleLanding(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
+{
+	InteractionTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
 void AEgg::Throw(const FVector& Direction, const float Power)
 {
 	MovementComponent->InitialSpeed = Power;
@@ -123,7 +133,7 @@ float AEgg::TakeDamage(float DamageAmount,
 		return 0.f;
 	}
 
-	
+
 	FVector Direction = GetActorLocation();
 
 	if (DamageCauser)
@@ -134,7 +144,7 @@ float AEgg::TakeDamage(float DamageAmount,
 	}
 	else
 	{
-		Direction = FVector::UpVector  + GetActorForwardVector() * -1;
+		Direction = FVector::UpVector + GetActorForwardVector() * -1;
 	}
 
 	Throw(Direction, StunComponent->ThrowPower);

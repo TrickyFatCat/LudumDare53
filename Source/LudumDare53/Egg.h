@@ -55,6 +55,9 @@ protected:
 
 	void Attach(const AActor* OtherActor);
 
+	UFUNCTION()
+	void HandleLanding(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
+
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEggTakenSignature OnEggTaken;
@@ -68,4 +71,5 @@ private:
 	                         AController* EventInstigator,
 	                         AActor* DamageCauser) override;
 	virtual void FellOutOfWorld(const UDamageType& dmgType) override;
+
 };
