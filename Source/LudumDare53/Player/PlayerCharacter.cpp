@@ -12,6 +12,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InteractionQueueComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "LudumDare53/Components/EggManagerComponent.h"
 #include "LudumDare53/Components/PlayerDeathSequenceComponent.h"
 
@@ -164,8 +165,8 @@ void APlayerCharacter::HandleRespawn()
 		return;
 	}
 
-	HitPoints->IncreaseValue(HitPoints->GetMaxValue());
-	ToggleInput(true);
+	const FName LevelName = *UGameplayStatics::GetCurrentLevelName(GetWorld());
+	UGameplayStatics::OpenLevel(GetWorld(), LevelName);
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount,
