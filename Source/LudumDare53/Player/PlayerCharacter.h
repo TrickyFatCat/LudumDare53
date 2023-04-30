@@ -18,6 +18,7 @@ class UInputAction;
 class UInteractionQueueComponent;
 class UEggManagerComponent;
 class UStarsCounterComponent;
+class UStunComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnJumpStartedSignature);
 
@@ -67,7 +68,10 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStarsCounterComponent> StarsCounter = nullptr;
-
+	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStunComponent> StunComponent = nullptr;
+ 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* MappingContext;
 
@@ -117,6 +121,12 @@ private:
 	
 	UFUNCTION()
 	void HandleRespawn();
+
+	UFUNCTION()
+	void HandleStunStarted();
+	
+	UFUNCTION()
+	void HandleStunFinished();
 
 	virtual float TakeDamage(float DamageAmount,
 	                         FDamageEvent const& DamageEvent,
