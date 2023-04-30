@@ -26,10 +26,12 @@ public:
 	UFUNCTION()
 	void ThrowEgg();
 
-	UFUNCTION()
-	bool GetIsEggInHands() const { return Egg != nullptr; }
-
 	void SetEgg(AEgg* NewEgg);
+
+	AEgg* GetEgg() const { return Egg; }
+	
+	bool bIsEggInHands = false;
+	
 protected:
 	UPROPERTY()
 	TObjectPtr<USkeletalMeshComponent> TargetMesh = nullptr;
@@ -40,7 +42,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	AEgg* Egg = nullptr;
 
+
 	UPROPERTY(EditAnywhere)
 	float ThrowPower = 500;
-
 };

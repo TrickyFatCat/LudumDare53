@@ -26,15 +26,20 @@ void UEggManagerComponent::BeginPlay()
 
 void UEggManagerComponent::ThrowEgg()
 {
-	if (!IsValid(Egg))
+	if (!bIsEggInHands)
 	{
 		return;
 	}
 
 	FVector Direction = GetOwner()->GetActorUpVector();
 	Direction = Direction.RotateAngleAxis(45, GetOwner()->GetActorRightVector());
-	Egg->Throw(Direction,ThrowPower);
-	Egg = nullptr;
+
+	if (IsValid(Egg))
+	{
+		Egg->Throw(Direction, ThrowPower);
+	}
+	
+	bIsEggInHands = false;
 }
 
 void UEggManagerComponent::SetEgg(AEgg* NewEgg)
