@@ -27,7 +27,7 @@ public:
 
 	UBehaviorTree* GetBehaviorTree() const { return BehaviorTreeAsset; }
 
-	AActor* Target() const;
+	AActor* FindTarget(const TSubclassOf<AActor> Class) const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="AI")
