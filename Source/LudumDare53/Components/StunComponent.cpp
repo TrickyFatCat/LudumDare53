@@ -28,6 +28,17 @@ bool UStunComponent::ApplyStun()
 	return true;
 }
 
+void UStunComponent::StopStun()
+{
+	if (!bIsStunned)
+	{
+		return;
+	}
+	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+
+	TimerManager.ClearTimer(StunTimerHandle);
+}
+
 void UStunComponent::FinishStun()
 {
 	bIsStunned = false;

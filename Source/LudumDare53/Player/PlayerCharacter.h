@@ -123,6 +123,9 @@ private:
 	void HandleRespawn();
 
 	UFUNCTION()
+	void HandleStunStarted();
+	
+	UFUNCTION()
 	void HandleStunFinished();
 
 	virtual float TakeDamage(float DamageAmount,

@@ -32,11 +32,23 @@ public:
 	UFUNCTION()
 	bool ApplyStun();
 
+	UFUNCTION()
+	void StopStun();
+
+	UFUNCTION(BlueprintPure)
+	bool GetIsStunned() const { return bIsStunned; }
+	
+	UPROPERTY(EditAnywhere)
+	float StunPower = 800.f;
+
+	UPROPERTY(EditAnywhere)
+	float ThrowPower = 800.f;
 protected:
 	bool bIsStunned = false;
 
 	UPROPERTY(EditAnywhere)
 	float StunTime = 0.5f;
+
 
 	FTimerHandle StunTimerHandle;
 

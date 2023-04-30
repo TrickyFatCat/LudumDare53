@@ -58,6 +58,7 @@ void APlayerCharacter::BeginPlay()
 	LivesComponent->OnValueDecreased.AddDynamic(this, &APlayerCharacter::HandleLivesDecrease);
 	DeathSequence->OnRespawnFinished.AddDynamic(this, &APlayerCharacter::HandleRespawn);
 	DefaultGravityScale = GetCharacterMovement()->GravityScale;
+	StunComponent->OnStunStarted.AddDynamic(this, &APlayerCharacter::HandleStunStarted);
 	StunComponent->OnStunFinished.AddDynamic(this, &APlayerCharacter::HandleStunFinished);
 
 	AEgg* Egg = EggManager->GetEgg();
@@ -170,6 +171,7 @@ void APlayerCharacter::HandleMeatCounterIncrease(const int32 NewValue, const int
 
 void APlayerCharacter::HandleLivesDecrease(const int32 NewValue, const int32 Amount)
 {
+	StunComponent->StopStun();
 	DeathSequence->SetIsGameOver(LivesComponent->GetValue() == 0);
 	DeathSequence->StartDeathSequence(bIsEggDestroyed);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -193,8 +195,18 @@ void APlayerCharacter::HandleRespawn()
 	UGameplayStatics::OpenLevel(GetWorld(), LevelName);
 }
 
+void APlayerCharacter::HandleStunStarted()
+{
+	ToggleInput(false);
+}
+
 void APlayerCharacter::HandleStunFinished()
 {
+	if (HitPoints->GetValue() <= 0)
+	{
+		return;
+	}
+	
 	ToggleInput(true);
 }
 
@@ -203,12 +215,33 @@ float APlayerCharacter::TakeDamage(float DamageAmount,
                                    AController* EventInstigator,
                                    AActor* DamageCauser)
 {
+	if (StunComponent->GetIsStunned())
+	{
+		return 0.f;
+	}
+	
+	FVector Direction = GetActorLocation();
+
+	if (DamageCauser)
+	{
+		Direction = Direction - DamageCauser->GetActorLocation();
+		Direction = Direction.GetUnsafeNormal();
+		Direction.Z = 1.0;
+	}
+	else
+	{
+		Direction = FVector::UpVector  + GetActorForwardVector() * -1;
+	}
+	
+	LaunchCharacter(Direction * StunComponent->StunPower, true, true);
 	HitPoints->DecreaseValue(DamageAmount);
-	FVector Direction = GetActorUpVector();
+	
+	Direction.X *= -1;
+	Direction.Y *= -1;
 	Direction = Direction.RotateAngleAxis(45, GetActorRightVector());
-	EggManager->ThrowEgg(Direction, ThrowPower);
+	EggManager->ThrowEgg(Direction, StunComponent->ThrowPower);
+	
 	StunComponent->ApplyStun();
-	ToggleInput(false);
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
@@ -239,6 +272,7 @@ void APlayerCharacter::Throw()
 	FVector Direction = GetActorUpVector();
 	Direction = Direction.RotateAngleAxis(45, GetActorRightVector());
 	EggManager->ThrowEgg(Direction, ThrowPower);
+
 }
 
 void APlayerCharacter::Jump()
