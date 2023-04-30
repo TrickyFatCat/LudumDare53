@@ -32,4 +32,5 @@ void AEggStart::BeginPlay()
 void AEggStart::HandleEggTaken()
 {
 	OnEggTaken.Broadcast();
+	OnEggWasTaken();
 }
