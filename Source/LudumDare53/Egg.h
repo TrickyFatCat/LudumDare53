@@ -54,6 +54,7 @@ protected:
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEggTakenSignature OnEggTaken;
-	
+
+	UFUNCTION(BlueprintCallable)
 	void Throw(const FVector& Direction, const float Power);
 };
