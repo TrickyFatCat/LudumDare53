@@ -5,7 +5,9 @@
 
 #include "BrainComponent.h"
 #include "EnemyController.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "LudumDare53/Components/DeathSequenceComponent.h"
 #include "LudumDare53/Components/HitPointsComponent.h"
@@ -18,6 +20,7 @@ AEnemyCharacter::AEnemyCharacter()
 
 	HitPointComponent = CreateDefaultSubobject<UHitPointsComponent>("HP");
 	DeathSequenceComponent = CreateDefaultSubobject<UDeathSequenceComponent>("DeathSequence");
+	SightComponent = CreateDefaultSubobject<USphereComponent>("Sight");
 
 	if (GetCharacterMovement())
 	{
@@ -34,11 +37,18 @@ void AEnemyCharacter::BeginPlay()
 	HitPointComponent->OnValueZero.AddDynamic(this, &AEnemyCharacter::Die);
 }
 
+AActor* AEnemyCharacter::Target() const
+{
+	TArray<AActor*> FindActors;
+	SightComponent->GetOverlappingActors(FindActors, APlayerCharacter::StaticClass());
+	return FindActors.IsEmpty() ? nullptr : FindActors[0];
+}
+
 void AEnemyCharacter::Die()
 {
 	if (const auto AIController = Cast<AEnemyController>(GetController())) AIController->BrainComponent->Cleanup();
-
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	DeathSequenceComponent->StartDeathSequence();
 }
 

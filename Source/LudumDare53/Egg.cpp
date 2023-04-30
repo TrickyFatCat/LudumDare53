@@ -6,21 +6,28 @@
 #include "SphereInteractionComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/EggHitPointsComponent.h"
+#include "Components/EggManagerComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 
 AEgg::AEgg()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("Capsule");
+	SetRootComponent(CapsuleComponent);
+
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
+	Mesh->SetupAttachment(GetRootComponent());
+
+	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("Movement");
+
 	HitPoints = CreateDefaultSubobject<UEggHitPointsComponent>("HitPoints");
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	InteractionTrigger = CreateDefaultSubobject<USphereInteractionComponent>("InteractionTrigger");
 	InteractionTrigger->SetupAttachment(GetRootComponent());
 	InteractionTrigger->SetInteractionMessage(this, "Pickup");
-
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
-
 }
 
 void AEgg::BeginPlay()
@@ -28,6 +35,60 @@ void AEgg::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AEgg::StartInteraction_Implementation(AActor* OtherActor)
+bool AEgg::FinishInteraction_Implementation(AActor* OtherActor)
 {
+	if (!IsValid(OtherActor))
+	{
+		return false;
+	}
+
+	UEggManagerComponent* EggManager = OtherActor->FindComponentByClass<UEggManagerComponent>();
+
+	if (!EggManager)
+	{
+		return false;
+	}
+
+	Attach(OtherActor);
+	EggManager->SetEgg(this);
+	return true;
+}
+
+void AEgg::ToggleCollision(const bool bIsEnabled) const
+{
+	const ECollisionEnabled::Type CollisionEnabled = bIsEnabled
+		                                                 ? ECollisionEnabled::QueryAndPhysics
+		                                                 : ECollisionEnabled::NoCollision;
+	CapsuleComponent->SetCollisionEnabled(CollisionEnabled);
+	InteractionTrigger->SetCollisionEnabled(CollisionEnabled);
+	Mesh->SetCollisionEnabled(CollisionEnabled);
+}
+
+void AEgg::Attach(const AActor* OtherActor)
+{
+	if (!IsValid(OtherActor))
+	{
+		return;
+	}
+
+	USkeletalMeshComponent* TargetMesh = OtherActor->FindComponentByClass<USkeletalMeshComponent>();
+
+	if (!TargetMesh)
+	{
+		return;
+	}
+
+	ToggleCollision(false);
+	const FHitResult HitResult;
+	MovementComponent->StopSimulating(HitResult);
+	AttachToComponent(TargetMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+}
+
+void AEgg::Throw(const FVector& Direction, const float Power)
+{
+	MovementComponent->InitialSpeed = Power;
+	ToggleCollision(true);
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	MovementComponent->Velocity = Direction * Power;
+	MovementComponent->SetUpdatedComponent(GetRootComponent());
 }
