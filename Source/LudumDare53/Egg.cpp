@@ -8,6 +8,8 @@
 #include "Components/EggHitPointsComponent.h"
 #include "Components/EggManagerComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/PlayerCharacter.h"
 
 
 AEgg::AEgg()
@@ -34,6 +36,18 @@ AEgg::AEgg()
 void AEgg::BeginPlay()
 {
 	Super::BeginPlay();
+
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	if (PlayerCharacter)
+	{
+		UEggManagerComponent* EggManager = PlayerCharacter->FindComponentByClass<UEggManagerComponent>();
+
+		if (EggManager)
+		{
+			EggManager->SetEgg(this);
+		}
+	}
 }
 
 bool AEgg::FinishInteraction_Implementation(AActor* OtherActor)
@@ -51,7 +65,6 @@ bool AEgg::FinishInteraction_Implementation(AActor* OtherActor)
 	}
 
 	Attach(OtherActor);
-	EggManager->SetEgg(this);
 	EggManager->bIsEggInHands = true;
 	OnEggTaken.Broadcast();
 	return true;

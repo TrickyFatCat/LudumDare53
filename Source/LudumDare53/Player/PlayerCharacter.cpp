@@ -13,6 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InteractionQueueComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "LudumDare53/Egg.h"
 #include "LudumDare53/Components/EggManagerComponent.h"
 #include "LudumDare53/Components/PlayerDeathSequenceComponent.h"
 
@@ -53,6 +54,18 @@ void APlayerCharacter::BeginPlay()
 	LivesComponent->OnValueDecreased.AddDynamic(this, &APlayerCharacter::HandleLivesDecrease);
 	DeathSequence->OnRespawnFinished.AddDynamic(this, &APlayerCharacter::HandleRespawn);
 	DefaultGravityScale = GetCharacterMovement()->GravityScale;
+
+	AEgg* Egg = EggManager->GetEgg();
+
+	if (Egg)
+	{
+		UHitPointsComponent* HitPointsComponent = Egg->FindComponentByClass<UHitPointsComponent>();
+
+		if (HitPointsComponent)
+		{
+			HitPointsComponent->OnValueZero.AddDynamic(this, &APlayerCharacter::HandleEggDeath);
+		}
+	}
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -153,9 +166,15 @@ void APlayerCharacter::HandleMeatCounterIncrease(const int32 NewValue, const int
 void APlayerCharacter::HandleLivesDecrease(const int32 NewValue, const int32 Amount)
 {
 	DeathSequence->SetIsGameOver(LivesComponent->GetValue() == 0);
-	DeathSequence->StartDeathSequence();
+	DeathSequence->StartDeathSequence(bIsEggDestroyed);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ToggleInput(false);
+}
+
+void APlayerCharacter::HandleEggDeath()
+{
+	bIsEggDestroyed = true;
+	LivesComponent->DecreaseValue(1);
 }
 
 void APlayerCharacter::HandleRespawn()

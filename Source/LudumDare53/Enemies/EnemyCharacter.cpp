@@ -50,7 +50,7 @@ void AEnemyCharacter::Die()
 	if (const auto AIController = Cast<AEnemyController>(GetController())) AIController->BrainComponent->Cleanup();
 	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	DeathSequenceComponent->StartDeathSequence();
+	DeathSequenceComponent->StartDeathSequence(false);
 }
 
 float AEnemyCharacter::TakeDamage(
