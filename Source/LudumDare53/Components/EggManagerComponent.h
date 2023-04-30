@@ -40,4 +40,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	AEgg* Egg = nullptr;
 
+	UPROPERTY(EditAnywhere)
+	float ThrowPower = 500;
+
 };

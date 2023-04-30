@@ -7,12 +7,20 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/EggHitPointsComponent.h"
 #include "Components/EggManagerComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 
 AEgg::AEgg()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("Capsule");
+	SetRootComponent(CapsuleComponent);
+
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
+	Mesh->SetupAttachment(GetRootComponent());
+
+	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("Movement");
 
 	HitPoints = CreateDefaultSubobject<UEggHitPointsComponent>("HitPoints");
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -25,8 +33,6 @@ AEgg::AEgg()
 void AEgg::BeginPlay()
 {
 	Super::BeginPlay();
-
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 bool AEgg::FinishInteraction_Implementation(AActor* OtherActor)
@@ -42,8 +48,8 @@ bool AEgg::FinishInteraction_Implementation(AActor* OtherActor)
 	{
 		return false;
 	}
-	
-	Attach(OtherActor, Socket);
+
+	Attach(OtherActor);
 	EggManager->SetEgg(this);
 	return true;
 }
@@ -53,20 +59,36 @@ void AEgg::ToggleCollision(const bool bIsEnabled) const
 	const ECollisionEnabled::Type CollisionEnabled = bIsEnabled
 		                                                 ? ECollisionEnabled::QueryAndPhysics
 		                                                 : ECollisionEnabled::NoCollision;
-	GetCapsuleComponent()->SetCollisionEnabled(CollisionEnabled);
+	CapsuleComponent->SetCollisionEnabled(CollisionEnabled);
 	InteractionTrigger->SetCollisionEnabled(CollisionEnabled);
+	Mesh->SetCollisionEnabled(CollisionEnabled);
 }
 
-void AEgg::Attach(AActor* OtherActor, const FName& SocketName)
+void AEgg::Attach(const AActor* OtherActor)
 {
+	if (!IsValid(OtherActor))
+	{
+		return;
+	}
+
+	USkeletalMeshComponent* TargetMesh = OtherActor->FindComponentByClass<USkeletalMeshComponent>();
+
+	if (!TargetMesh)
+	{
+		return;
+	}
+
 	ToggleCollision(false);
-	AttachToActor(OtherActor, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+	const FHitResult HitResult;
+	MovementComponent->StopSimulating(HitResult);
+	AttachToComponent(TargetMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
 }
 
-void AEgg::Throw(const FVector& Power)
+void AEgg::Throw(const FVector& Direction, const float Power)
 {
+	MovementComponent->InitialSpeed = Power;
 	ToggleCollision(true);
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	GetCharacterMovement()->MovementMode = EMovementMode::MOVE_Falling;
-	LaunchCharacter(Power, true, true);
+	MovementComponent->Velocity = Direction * Power;
+	MovementComponent->SetUpdatedComponent(GetRootComponent());
 }

@@ -3,9 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
+#include "LudumDare53/Player/PlayerCharacter.h"
 #include "EnemyCharacter.generated.h"
 
+class APlayerCharacter;
+class USphereComponent;
 class UDeathSequenceComponent;
 class UHitPointsComponent;
 class UBehaviorTree;
@@ -23,12 +27,17 @@ public:
 
 	UBehaviorTree* GetBehaviorTree() const { return BehaviorTreeAsset; }
 
+	AActor* Target() const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="AI")
 	TObjectPtr<UBehaviorTree> BehaviorTreeAsset;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UHitPointsComponent> HitPointComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Components")
+	TObjectPtr<USphereComponent> SightComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DeathSequence")
 	TObjectPtr<UDeathSequenceComponent> DeathSequenceComponent;
