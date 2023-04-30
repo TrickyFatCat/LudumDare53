@@ -15,6 +15,7 @@ class UCapsuleComponent;
 class UStaticMeshComponent;
 class USphereInteractionComponent;
 class UEggManagerComponent;
+class UStunComponent;
 
 UCLASS()
 class LUDUMDARE53_API AEgg : public AActor, public IInteractionInterface
@@ -41,6 +42,12 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<USphereInteractionComponent> InteractionTrigger = nullptr;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UStunComponent> StunComponent = nullptr;
+
+	UFUNCTION()
+	void HandleLanding(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
 
 	UPROPERTY(EditAnywhere)
 	FName SocketName = NAME_None;
