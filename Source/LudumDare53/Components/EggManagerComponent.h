@@ -23,25 +23,24 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	AEgg* GetEgg();
-
-	void AttachEgg();
-
+	UFUNCTION()
 	void ThrowEgg();
 
-protected:
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<AEgg> EggClass = nullptr;
+	UFUNCTION()
+	bool GetIsEggInHands() const { return Egg != nullptr; }
 
+	void SetEgg(AEgg* NewEgg);
+protected:
 	UPROPERTY()
 	TObjectPtr<USkeletalMeshComponent> TargetMesh = nullptr;
-
-	UPROPERTY()
-	bool bEggIsTaken = false;
 
 	UPROPERTY(EditAnywhere)
 	FName SocketName = NAME_None;
 
 	UPROPERTY(BlueprintReadOnly)
 	AEgg* Egg = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	float ThrowPower = 500;
+
 };
