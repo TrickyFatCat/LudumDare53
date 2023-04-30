@@ -4,22 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "FindPlayerService.generated.h"
+#include "FindEggService.generated.h"
 
 UCLASS()
-class LUDUMDARE53_API UFindPlayerService : public UBTService
+class LUDUMDARE53_API UFindEggService : public UBTService
 {
 	GENERATED_BODY()
 
 public:
-	UFindPlayerService();
+	UFindEggService();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
-	FBlackboardKeySelector PlayerActorKey;
+	FBlackboardKeySelector EggActorKey;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
 	FBlackboardKeySelector LocationKey;
-
+	
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 };
