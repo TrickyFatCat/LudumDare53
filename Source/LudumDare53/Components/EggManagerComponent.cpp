@@ -8,7 +8,7 @@
 
 UEggManagerComponent::UEggManagerComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 }
 
@@ -26,13 +26,20 @@ void UEggManagerComponent::BeginPlay()
 
 void UEggManagerComponent::ThrowEgg()
 {
-	if (!IsValid(Egg))
+	if (!bIsEggInHands)
 	{
 		return;
 	}
 
-	Egg->Throw(FVector{0.0, 0.0, 1000.0});
-	Egg = nullptr;
+	FVector Direction = GetOwner()->GetActorUpVector();
+	Direction = Direction.RotateAngleAxis(45, GetOwner()->GetActorRightVector());
+
+	if (IsValid(Egg))
+	{
+		Egg->Throw(Direction, ThrowPower);
+	}
+	
+	bIsEggInHands = false;
 }
 
 void UEggManagerComponent::SetEgg(AEgg* NewEgg)

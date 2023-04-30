@@ -5,7 +5,9 @@
 
 #include "BrainComponent.h"
 #include "EnemyController.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "LudumDare53/Components/DeathSequenceComponent.h"
 #include "LudumDare53/Components/HitPointsComponent.h"
@@ -18,6 +20,8 @@ AEnemyCharacter::AEnemyCharacter()
 
 	HitPointComponent = CreateDefaultSubobject<UHitPointsComponent>("HP");
 	DeathSequenceComponent = CreateDefaultSubobject<UDeathSequenceComponent>("DeathSequence");
+	SightComponent = CreateDefaultSubobject<USphereComponent>("Sight");
+	SightComponent->SetupAttachment(GetRootComponent());
 
 	if (GetCharacterMovement())
 	{
@@ -32,6 +36,13 @@ void AEnemyCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	HitPointComponent->OnValueZero.AddDynamic(this, &AEnemyCharacter::Die);
+}
+
+AActor* AEnemyCharacter::Target() const
+{
+	TArray<AActor*> FindActors;
+	SightComponent->GetOverlappingActors(FindActors, APlayerCharacter::StaticClass());
+	return FindActors.IsEmpty() ? nullptr : FindActors[0];
 }
 
 void AEnemyCharacter::Die()
