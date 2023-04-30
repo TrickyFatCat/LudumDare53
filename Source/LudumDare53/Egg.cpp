@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/EggHitPointsComponent.h"
 #include "Components/EggManagerComponent.h"
+#include "Components/StunComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/PlayerCharacter.h"
@@ -26,6 +27,7 @@ AEgg::AEgg()
 	MovementComponent->bComponentShouldUpdatePhysicsVolume = true;
 
 	HitPoints = CreateDefaultSubobject<UEggHitPointsComponent>("HitPoints");
+	StunComponent = CreateDefaultSubobject<UStunComponent>("StunComponent");
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	InteractionTrigger = CreateDefaultSubobject<USphereInteractionComponent>("InteractionTrigger");
@@ -48,6 +50,8 @@ void AEgg::BeginPlay()
 			EggManager->SetEgg(this);
 		}
 	}
+
+	MovementComponent->OnProjectileBounce.AddDynamic(this, &AEgg::HandleLanding);
 }
 
 bool AEgg::FinishInteraction_Implementation(AActor* OtherActor)
@@ -77,8 +81,12 @@ void AEgg::ToggleCollision(const bool bIsEnabled) const
 		                                                 : ECollisionEnabled::NoCollision;
 	MovementComponent->bSimulationEnabled = bIsEnabled;
 	CapsuleComponent->SetCollisionEnabled(CollisionEnabled);
-	InteractionTrigger->SetCollisionEnabled(CollisionEnabled);
 	Mesh->SetCollisionEnabled(CollisionEnabled);
+
+	if (!bIsEnabled)
+	{
+		InteractionTrigger->SetCollisionEnabled(CollisionEnabled);
+	}
 }
 
 void AEgg::Attach(const AActor* OtherActor)
@@ -101,6 +109,11 @@ void AEgg::Attach(const AActor* OtherActor)
 	AttachToComponent(TargetMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
 }
 
+void AEgg::HandleLanding(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
+{
+	InteractionTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
 void AEgg::Throw(const FVector& Direction, const float Power)
 {
 	MovementComponent->InitialSpeed = Power;
@@ -115,6 +128,27 @@ float AEgg::TakeDamage(float DamageAmount,
                        AController* EventInstigator,
                        AActor* DamageCauser)
 {
+	if (StunComponent->GetIsStunned())
+	{
+		return 0.f;
+	}
+
+
+	FVector Direction = GetActorLocation();
+
+	if (DamageCauser)
+	{
+		Direction = Direction - DamageCauser->GetActorLocation();
+		Direction = Direction.GetUnsafeNormal();
+		Direction.Z = 1.0;
+	}
+	else
+	{
+		Direction = FVector::UpVector + GetActorForwardVector() * -1;
+	}
+
+	Throw(Direction, StunComponent->ThrowPower);
+	StunComponent->ApplyStun();
 	HitPoints->DecreaseValue(DamageAmount);
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
