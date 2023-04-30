@@ -8,7 +8,7 @@
 
 UEggManagerComponent::UEggManagerComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 }
 
@@ -31,7 +31,9 @@ void UEggManagerComponent::ThrowEgg()
 		return;
 	}
 
-	Egg->Throw(FVector{0.0, 0.0, 1000.0});
+	FVector Direction = GetOwner()->GetActorUpVector();
+	Direction = Direction.RotateAngleAxis(45, GetOwner()->GetActorRightVector());
+	Egg->Throw(Direction,ThrowPower);
 	Egg = nullptr;
 }
 
