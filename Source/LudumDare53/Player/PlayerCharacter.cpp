@@ -96,8 +96,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 
 		//Interact
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this,
+		EnhancedInputComponent->BindAction(InteractAction,
+		                                   ETriggerEvent::Triggered,
+		                                   this,
 		                                   &APlayerCharacter::StartInteraction);
+
+		//ThrowEgg
+		EnhancedInputComponent->BindAction(ThrowAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Throw);
 	}
 }
 
@@ -195,22 +200,7 @@ void APlayerCharacter::StartInteraction()
 	InteractionQueue->StartInteraction();
 }
 
-void APlayerCharacter::StopJumping()
+void APlayerCharacter::Throw()
 {
-	Super::StopJumping();
-	
-	const float VelocityZ = GetCharacterMovement()->Velocity.Z;
-	
-	if (!bJumpWasStopped && VelocityZ > GetCharacterMovement()->JumpZVelocity * StopJumpVelocityFactor)
-	{
-		GetCharacterMovement()->Velocity.Z = FMath::Max(VelocityZ * StopJumpVelocityFactor, MinJumpVelocity);
-		bJumpWasStopped = true;
-	}
-}
-
-void APlayerCharacter::Landed(const FHitResult& Hit)
-{
-	Super::Landed(Hit);
-
-	bJumpWasStopped = false;
+	EggManager->ThrowEgg();
 }

@@ -22,28 +22,6 @@ void UEggManagerComponent::InitializeComponent()
 void UEggManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Egg = GetWorld()->SpawnActor<AEgg>(EggClass, FTransform::Identity);
-
-	if (Egg)
-	{
-		AttachEgg();
-	}
-}
-
-AEgg* UEggManagerComponent::GetEgg()
-{
-	return Egg;
-}
-
-void UEggManagerComponent::AttachEgg()
-{
-	if (!IsValid(Egg) || !IsValid(TargetMesh))
-	{
-		return;
-	}
-
-	Egg->AttachToComponent(TargetMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
 }
 
 void UEggManagerComponent::ThrowEgg()
@@ -52,4 +30,17 @@ void UEggManagerComponent::ThrowEgg()
 	{
 		return;
 	}
+
+	Egg->Throw(FVector{0.0, 0.0, 1000.0});
+	Egg = nullptr;
+}
+
+void UEggManagerComponent::SetEgg(AEgg* NewEgg)
+{
+	if (Egg || !IsValid(NewEgg))
+	{
+		return;
+	}
+
+	Egg = NewEgg;
 }
