@@ -19,6 +19,8 @@ class UInteractionQueueComponent;
 class UEggManagerComponent;
 class UStarsCounterComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnJumpStartedSignature);
+
 UCLASS()
 class LUDUMDARE53_API APlayerCharacter : public ACharacter
 {
@@ -34,6 +36,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnJumpStartedSignature OnJumpStarted;
 
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category="Components")
@@ -89,6 +94,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	float GravityScaleDelta = 1.0;
 
+	UPROPERTY(EditAnywhere)
+	float ThrowPower = 1250;
+
 	bool bIsEggDestroyed = false;
 
 	void Move(const FInputActionValue& Value);
@@ -122,4 +130,6 @@ private:
 	void StartInteraction();
 
 	void Throw();
+
+	virtual void Jump() override;
 };

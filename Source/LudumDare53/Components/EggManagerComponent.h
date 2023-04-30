@@ -24,7 +24,7 @@ protected:
 
 public:
 	UFUNCTION()
-	void ThrowEgg();
+	void ThrowEgg(const FVector& Direction, const float Power);
 
 	void SetEgg(AEgg* NewEgg);
 
@@ -41,8 +41,4 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	AEgg* Egg = nullptr;
-
-
-	UPROPERTY(EditAnywhere)
-	float ThrowPower = 500;
 };
