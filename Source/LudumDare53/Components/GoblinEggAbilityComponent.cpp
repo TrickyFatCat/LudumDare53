@@ -3,9 +3,12 @@
 
 #include "GoblinEggAbilityComponent.h"
 
+#include "AIController.h"
 #include "EggManagerComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "LudumDare53/Egg.h"
+#include "LudumDare53/Enemies/EnemyCharacter.h"
 
 bool UGoblinEggAbilityComponent::ActivateAbility()
 {
@@ -26,6 +29,9 @@ bool UGoblinEggAbilityComponent::ActivateAbility()
 	PreviousSpeed = Component->MaxWalkSpeed;
 	Component->MaxWalkSpeed = SpeedWithEgg;
 
+	const auto Controller = Cast<AAIController>(Cast<AEnemyCharacter>(GetOwner())->GetController());
+	Controller->GetBlackboardComponent()->SetValueAsBool("EggInHand", true);
+
 	Egg->OnEggTaken.Broadcast();
 
 	bIsActivated = true;
@@ -42,6 +48,9 @@ bool UGoblinEggAbilityComponent::DeactivateAbility()
 
 	const auto Component = GetOwner()->FindComponentByClass<UCharacterMovementComponent>();
 	Component->MaxWalkSpeed = PreviousSpeed;
+
+	const auto Controller = Cast<AAIController>(Cast<AEnemyCharacter>(GetOwner())->GetController());
+	Controller->GetBlackboardComponent()->SetValueAsBool("EggInHand", false);
 
 	bIsActivated = false;
 	OnAbilityDeactivated.Broadcast();
