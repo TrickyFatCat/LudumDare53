@@ -17,6 +17,7 @@
 #include "LudumDare53/Components/EggManagerComponent.h"
 #include "LudumDare53/Components/PlayerDeathSequenceComponent.h"
 #include "LudumDare53/Components/StarsCounterComponent.h"
+#include "LudumDare53/Components/StunComponent.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -38,6 +39,7 @@ APlayerCharacter::APlayerCharacter()
 	InteractionQueue = CreateDefaultSubobject<UInteractionQueueComponent>("InteractionQueue");
 	EggManager = CreateDefaultSubobject<UEggManagerComponent>("EggManager");
 	StarsCounter = CreateDefaultSubobject<UStarsCounterComponent>("StarsCounter");
+	StunComponent = CreateDefaultSubobject<UStunComponent>("StunComponent");
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -56,6 +58,7 @@ void APlayerCharacter::BeginPlay()
 	LivesComponent->OnValueDecreased.AddDynamic(this, &APlayerCharacter::HandleLivesDecrease);
 	DeathSequence->OnRespawnFinished.AddDynamic(this, &APlayerCharacter::HandleRespawn);
 	DefaultGravityScale = GetCharacterMovement()->GravityScale;
+	StunComponent->OnStunFinished.AddDynamic(this, &APlayerCharacter::HandleStunFinished);
 
 	AEgg* Egg = EggManager->GetEgg();
 
@@ -190,6 +193,11 @@ void APlayerCharacter::HandleRespawn()
 	UGameplayStatics::OpenLevel(GetWorld(), LevelName);
 }
 
+void APlayerCharacter::HandleStunFinished()
+{
+	ToggleInput(true);
+}
+
 float APlayerCharacter::TakeDamage(float DamageAmount,
                                    FDamageEvent const& DamageEvent,
                                    AController* EventInstigator,
@@ -199,6 +207,8 @@ float APlayerCharacter::TakeDamage(float DamageAmount,
 	FVector Direction = GetActorUpVector();
 	Direction = Direction.RotateAngleAxis(45, GetActorRightVector());
 	EggManager->ThrowEgg(Direction, ThrowPower);
+	StunComponent->ApplyStun();
+	ToggleInput(false);
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
