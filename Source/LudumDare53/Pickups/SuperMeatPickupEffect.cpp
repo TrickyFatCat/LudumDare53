@@ -3,7 +3,8 @@
 
 #include "SuperMeatPickupEffect.h"
 
-#include "LudumDare53/Components/MeatCounterComponent.h"
+#include "LudumDare53/Components/HitPointsComponent.h"
+
 
 bool USuperMeatPickupEffect::ActivateEffect_Implementation(AActor* OtherActor)
 {
@@ -12,13 +13,13 @@ bool USuperMeatPickupEffect::ActivateEffect_Implementation(AActor* OtherActor)
 		return false;
 	}
 
-	UMeatCounterComponent* MeatCounter = OtherActor->FindComponentByClass<UMeatCounterComponent>();
+	UHitPointsComponent* HitPointsComponent = OtherActor->FindComponentByClass<UHitPointsComponent>();
 
-	if (!MeatCounter)
+	if (!HitPointsComponent)
 	{
 		return false;
 	}
 
-	const int32 Amount = MeatCounter->GetMaxValue() - MeatCounter->GetValue() + 3;
-	return MeatCounter->IncreaseValue(Amount, false);
+	const int32 Amount = HitPointsComponent->GetMaxValue() - HitPointsComponent->GetValue() + 3;
+	return HitPointsComponent->IncreaseValue(Amount, false);
 }
