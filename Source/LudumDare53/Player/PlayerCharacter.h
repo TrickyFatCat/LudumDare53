@@ -17,6 +17,7 @@ class UInputMappingContext;
 class UInputAction;
 class UInteractionQueueComponent;
 class UEggManagerComponent;
+class UStarsCounterComponent;
 
 UCLASS()
 class LUDUMDARE53_API APlayerCharacter : public ACharacter
@@ -58,6 +59,9 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UEggManagerComponent> EggManager = nullptr;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStarsCounterComponent> StarsCounter = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* MappingContext;

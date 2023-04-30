@@ -16,6 +16,7 @@
 #include "LudumDare53/Egg.h"
 #include "LudumDare53/Components/EggManagerComponent.h"
 #include "LudumDare53/Components/PlayerDeathSequenceComponent.h"
+#include "LudumDare53/Components/StarsCounterComponent.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -36,6 +37,7 @@ APlayerCharacter::APlayerCharacter()
 	DeathSequence = CreateDefaultSubobject<UPlayerDeathSequenceComponent>("DeathSequence");
 	InteractionQueue = CreateDefaultSubobject<UInteractionQueueComponent>("InteractionQueue");
 	EggManager = CreateDefaultSubobject<UEggManagerComponent>("EggManager");
+	StarsCounter = CreateDefaultSubobject<UStarsCounterComponent>("StarsCounter");
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
