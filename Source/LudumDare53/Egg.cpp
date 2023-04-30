@@ -21,6 +21,7 @@ AEgg::AEgg()
 	Mesh->SetupAttachment(GetRootComponent());
 
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("Movement");
+	MovementComponent->bComponentShouldUpdatePhysicsVolume = true;
 
 	HitPoints = CreateDefaultSubobject<UEggHitPointsComponent>("HitPoints");
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -48,7 +49,7 @@ bool AEgg::FinishInteraction_Implementation(AActor* OtherActor)
 	{
 		return false;
 	}
-	
+
 	Attach(OtherActor);
 	EggManager->SetEgg(this);
 	EggManager->bIsEggInHands = true;
@@ -73,7 +74,7 @@ void AEgg::Attach(const AActor* OtherActor)
 	{
 		return;
 	}
-	
+
 	USkeletalMeshComponent* TargetMesh = OtherActor->FindComponentByClass<USkeletalMeshComponent>();
 
 	if (!TargetMesh)
@@ -94,4 +95,18 @@ void AEgg::Throw(const FVector& Direction, const float Power)
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	MovementComponent->Velocity = Direction * Power;
 	MovementComponent->SetUpdatedComponent(GetRootComponent());
+}
+
+float AEgg::TakeDamage(float DamageAmount,
+                       FDamageEvent const& DamageEvent,
+                       AController* EventInstigator,
+                       AActor* DamageCauser)
+{
+	HitPoints->DecreaseValue(DamageAmount);
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
+void AEgg::FellOutOfWorld(const UDamageType& dmgType)
+{
+	HitPoints->DecreaseValue(HitPoints->GetValue());
 }
