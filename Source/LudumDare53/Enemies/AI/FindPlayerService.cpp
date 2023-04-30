@@ -20,7 +20,12 @@ void UFindPlayerService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	if (Blackboard && Controller)
 	{
 		const auto Enemy = Cast<AEnemyCharacter>(Controller->GetPawn());
-		if (Enemy) Blackboard->SetValueAsObject(PlayerActorKey.SelectedKeyName, Enemy->Target());
+		if (Enemy)
+		{
+			const auto Target = Enemy->FindTarget(APlayerCharacter::StaticClass());
+			Blackboard->SetValueAsObject(PlayerActorKey.SelectedKeyName, Target);
+			if (Target) Blackboard->SetValueAsVector(LocationKey.SelectedKeyName, Target->GetActorLocation());
+		}
 	}
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 }
