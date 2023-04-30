@@ -11,6 +11,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "InteractionQueueComponent.h"
+#include "LudumDare53/Components/EggManagerComponent.h"
 #include "LudumDare53/Components/PlayerDeathSequenceComponent.h"
 
 
@@ -30,6 +32,8 @@ APlayerCharacter::APlayerCharacter()
 	LivesComponent = CreateDefaultSubobject<ULivesComponent>("Lives");
 	MeatCounter = CreateDefaultSubobject<UMeatCounterComponent>("MeatCounter");
 	DeathSequence = CreateDefaultSubobject<UPlayerDeathSequenceComponent>("DeathSequence");
+	InteractionQueue = CreateDefaultSubobject<UInteractionQueueComponent>("InteractionQueue");
+	EggManager = CreateDefaultSubobject<UEggManagerComponent>("EggManager");
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -47,6 +51,7 @@ void APlayerCharacter::BeginPlay()
 	MeatCounter->OnValueIncreased.AddDynamic(this, &APlayerCharacter::HandleMeatCounterIncrease);
 	LivesComponent->OnValueDecreased.AddDynamic(this, &APlayerCharacter::HandleLivesDecrease);
 	DeathSequence->OnRespawnFinished.AddDynamic(this, &APlayerCharacter::HandleRespawn);
+	DefaultGravityScale = GetCharacterMovement()->GravityScale;
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -61,6 +66,16 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (GetCharacterMovement()->IsFalling())
+	{
+		GetCharacterMovement()->GravityScale = DefaultGravityScale + GravityScaleDelta * (GetCharacterMovement()->
+			Velocity.Z < 0.0);
+	}
+	else
+	{
+		GetCharacterMovement()->GravityScale = DefaultGravityScale;
+	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -71,7 +86,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		//Moving
@@ -79,6 +94,15 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+
+		//Interact
+		EnhancedInputComponent->BindAction(InteractAction,
+		                                   ETriggerEvent::Triggered,
+		                                   this,
+		                                   &APlayerCharacter::StartInteraction);
+
+		//ThrowEgg
+		EnhancedInputComponent->BindAction(ThrowAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Throw);
 	}
 }
 
@@ -169,4 +193,14 @@ void APlayerCharacter::ToggleInput(const bool bIsEnabled)
 	}
 
 	bIsEnabled ? EnableInput(PlayerController) : DisableInput(PlayerController);
+}
+
+void APlayerCharacter::StartInteraction()
+{
+	InteractionQueue->StartInteraction();
+}
+
+void APlayerCharacter::Throw()
+{
+	EggManager->ThrowEgg();
 }
