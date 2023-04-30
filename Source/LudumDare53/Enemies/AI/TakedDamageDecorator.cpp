@@ -8,8 +8,5 @@
 bool UTakedDamageDecorator::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
 	const auto Blackboard = OwnerComp.GetBlackboardComponent();
-	
-	const auto bTakenDamage = Blackboard && Blackboard->GetValueAsBool(TakeDamageKey.SelectedKeyName);
-	
-	return bTakenDamage;
+	return Blackboard && Blackboard->GetValueAsBool(TakeDamageKey.SelectedKeyName);
 }
