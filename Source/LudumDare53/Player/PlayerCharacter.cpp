@@ -196,7 +196,9 @@ float APlayerCharacter::TakeDamage(float DamageAmount,
                                    AActor* DamageCauser)
 {
 	HitPoints->DecreaseValue(DamageAmount);
-
+	FVector Direction = GetActorUpVector();
+	Direction = Direction.RotateAngleAxis(45, GetActorRightVector());
+	EggManager->ThrowEgg(Direction, ThrowPower);
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
@@ -224,5 +226,13 @@ void APlayerCharacter::StartInteraction()
 
 void APlayerCharacter::Throw()
 {
-	EggManager->ThrowEgg();
+	FVector Direction = GetActorUpVector();
+	Direction = Direction.RotateAngleAxis(45, GetActorRightVector());
+	EggManager->ThrowEgg(Direction, ThrowPower);
+}
+
+void APlayerCharacter::Jump()
+{
+	Super::Jump();
+	OnJumpStarted.Broadcast();
 }
