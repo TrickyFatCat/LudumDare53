@@ -51,6 +51,7 @@ bool AEgg::FinishInteraction_Implementation(AActor* OtherActor)
 	
 	Attach(OtherActor);
 	EggManager->SetEgg(this);
+	EggManager->bIsEggInHands = true;
 	OnEggTaken.Broadcast();
 	return true;
 }
