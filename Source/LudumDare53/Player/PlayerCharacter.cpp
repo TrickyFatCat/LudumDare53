@@ -194,23 +194,3 @@ void APlayerCharacter::StartInteraction()
 {
 	InteractionQueue->StartInteraction();
 }
-
-void APlayerCharacter::StopJumping()
-{
-	Super::StopJumping();
-	
-	const float VelocityZ = GetCharacterMovement()->Velocity.Z;
-	
-	if (!bJumpWasStopped && VelocityZ > GetCharacterMovement()->JumpZVelocity * StopJumpVelocityFactor)
-	{
-		GetCharacterMovement()->Velocity.Z = FMath::Max(VelocityZ * StopJumpVelocityFactor, MinJumpVelocity);
-		bJumpWasStopped = true;
-	}
-}
-
-void APlayerCharacter::Landed(const FHitResult& Hit)
-{
-	Super::Landed(Hit);
-
-	bJumpWasStopped = false;
-}

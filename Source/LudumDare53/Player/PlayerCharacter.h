@@ -80,11 +80,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	float StopJumpVelocityFactor = 0.25;
 
-	bool bJumpWasStopped = false;
-	
-	UPROPERTY(EditAnywhere)
-	float MinJumpVelocity = 400.f;
-	
 	float DefaultGravityScale = 2.0;
 
 	UPROPERTY(EditAnywhere)
@@ -116,8 +111,4 @@ private:
 	void ToggleInput(const bool bIsEnabled);
 
 	void StartInteraction();
-
-	virtual void StopJumping() override;
-
-	virtual void Landed(const FHitResult& Hit) override;
 };
