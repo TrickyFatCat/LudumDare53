@@ -80,13 +80,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess))
 	FVector CameraSensitivity{0.f, 25.f, 25.f};
 
-	UPROPERTY(EditAnywhere)
-	float StopJumpVelocityFactor = 0.25;
-
 	float DefaultGravityScale = 2.0;
 
 	UPROPERTY(EditAnywhere)
 	float GravityScaleDelta = 1.0;
+
+	bool bIsEggDestroyed = false;
 
 	void Move(const FInputActionValue& Value);
 
@@ -101,6 +100,9 @@ private:
 	UFUNCTION()
 	void HandleLivesDecrease(const int32 NewValue, const int32 Amount);
 
+	UFUNCTION()
+	void HandleEggDeath();
+	
 	UFUNCTION()
 	void HandleRespawn();
 
