@@ -49,14 +49,14 @@ protected:
 
 	void ToggleCollision(const bool bIsEnabled) const;
 
-	void Attach(const AActor* OtherActor);
-
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEggTakenSignature OnEggTaken;
 
 	UFUNCTION(BlueprintCallable)
 	void Throw(const FVector& Direction, const float Power);
+
+	void Attach(const AActor* OtherActor);
 
 private:
 	virtual float TakeDamage(float DamageAmount,

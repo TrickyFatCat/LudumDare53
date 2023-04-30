@@ -10,5 +10,4 @@ UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class LUDUMDARE53_API UGoblinAttackAbilityComponent : public UAbilityComponent
 {
 	GENERATED_BODY()
-	
 };
