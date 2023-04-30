@@ -29,16 +29,16 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UCapsuleComponent> CapsuleComponent = nullptr;
-	
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UStaticMeshComponent> Mesh = nullptr;
-	
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UProjectileMovementComponent> MovementComponent = nullptr;
-	
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UEggHitPointsComponent> HitPoints = nullptr;
-	
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<USphereInteractionComponent> InteractionTrigger = nullptr;
 
@@ -57,4 +57,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Throw(const FVector& Direction, const float Power);
+
+private:
+	virtual float TakeDamage(float DamageAmount,
+	                         FDamageEvent const& DamageEvent,
+	                         AController* EventInstigator,
+	                         AActor* DamageCauser) override;
+	virtual void FellOutOfWorld(const UDamageType& dmgType) override;
 };

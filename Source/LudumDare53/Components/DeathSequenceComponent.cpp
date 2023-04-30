@@ -22,7 +22,7 @@ void UDeathSequenceComponent::InitializeComponent()
 	if (Character)
 	{
 		AnimInstance = Character->GetMesh()->GetAnimInstance();
-	
+
 		if (AnimInstance)
 		{
 			AnimInstance->OnMontageBlendingOut.AddDynamic(this, &UDeathSequenceComponent::FinishDeathSequence);
@@ -35,29 +35,37 @@ void UDeathSequenceComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UDeathSequenceComponent::StartDeathSequence()
+void UDeathSequenceComponent::StartDeathSequence(const bool bEggIsDead)
 {
-	if (!DeathAnimation || !IsValid(Character))
+	if (!IsValid(Character))
+	{
+		return;
+	}
+
+	if (!DeathAnimation && !bEggIsDead)
+	{
+		return;
+	}
+
+	if (!EggDeathAnimation && bEggIsDead)
 	{
 		return;
 	}
 
 	Character->StopAnimMontage();
 	Character->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	Character->PlayAnimMontage(DeathAnimation);
+	Character->PlayAnimMontage(bEggIsDead ? EggDeathAnimation : DeathAnimation);
 	OnDeathSequenceStarted.Broadcast();
 }
 
 void UDeathSequenceComponent::FinishDeathSequence(UAnimMontage* AnimMontage, const bool bIsInterrupted)
 {
-	if (AnimMontage != DeathAnimation)
+	if (AnimMontage == DeathAnimation || AnimMontage == EggDeathAnimation)
 	{
-		return;
+		Character->GetMesh()->bPauseAnims = true;
+		HandleDeathSequenceFinish();
+		OnDeathSequenceFinished.Broadcast();
 	}
-
-	Character->GetMesh()->bPauseAnims = true;
-	HandleDeathSequenceFinish();
-	OnDeathSequenceFinished.Broadcast();
 }
 
 void UDeathSequenceComponent::HandleDeathSequenceFinish()

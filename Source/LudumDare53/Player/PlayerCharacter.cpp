@@ -12,8 +12,11 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InteractionQueueComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "LudumDare53/Egg.h"
 #include "LudumDare53/Components/EggManagerComponent.h"
 #include "LudumDare53/Components/PlayerDeathSequenceComponent.h"
+#include "LudumDare53/Components/StarsCounterComponent.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -34,6 +37,7 @@ APlayerCharacter::APlayerCharacter()
 	DeathSequence = CreateDefaultSubobject<UPlayerDeathSequenceComponent>("DeathSequence");
 	InteractionQueue = CreateDefaultSubobject<UInteractionQueueComponent>("InteractionQueue");
 	EggManager = CreateDefaultSubobject<UEggManagerComponent>("EggManager");
+	StarsCounter = CreateDefaultSubobject<UStarsCounterComponent>("StarsCounter");
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -52,6 +56,18 @@ void APlayerCharacter::BeginPlay()
 	LivesComponent->OnValueDecreased.AddDynamic(this, &APlayerCharacter::HandleLivesDecrease);
 	DeathSequence->OnRespawnFinished.AddDynamic(this, &APlayerCharacter::HandleRespawn);
 	DefaultGravityScale = GetCharacterMovement()->GravityScale;
+
+	AEgg* Egg = EggManager->GetEgg();
+
+	if (Egg)
+	{
+		UHitPointsComponent* HitPointsComponent = Egg->FindComponentByClass<UHitPointsComponent>();
+
+		if (HitPointsComponent)
+		{
+			HitPointsComponent->OnValueZero.AddDynamic(this, &APlayerCharacter::HandleEggDeath);
+		}
+	}
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -152,9 +168,15 @@ void APlayerCharacter::HandleMeatCounterIncrease(const int32 NewValue, const int
 void APlayerCharacter::HandleLivesDecrease(const int32 NewValue, const int32 Amount)
 {
 	DeathSequence->SetIsGameOver(LivesComponent->GetValue() == 0);
-	DeathSequence->StartDeathSequence();
+	DeathSequence->StartDeathSequence(bIsEggDestroyed);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ToggleInput(false);
+}
+
+void APlayerCharacter::HandleEggDeath()
+{
+	bIsEggDestroyed = true;
+	LivesComponent->DecreaseValue(1);
 }
 
 void APlayerCharacter::HandleRespawn()
@@ -164,8 +186,8 @@ void APlayerCharacter::HandleRespawn()
 		return;
 	}
 
-	HitPoints->IncreaseValue(HitPoints->GetMaxValue());
-	ToggleInput(true);
+	const FName LevelName = *UGameplayStatics::GetCurrentLevelName(GetWorld());
+	UGameplayStatics::OpenLevel(GetWorld(), LevelName);
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount,
@@ -174,7 +196,9 @@ float APlayerCharacter::TakeDamage(float DamageAmount,
                                    AActor* DamageCauser)
 {
 	HitPoints->DecreaseValue(DamageAmount);
-
+	FVector Direction = GetActorUpVector();
+	Direction = Direction.RotateAngleAxis(45, GetActorRightVector());
+	EggManager->ThrowEgg(Direction, ThrowPower);
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
@@ -202,5 +226,13 @@ void APlayerCharacter::StartInteraction()
 
 void APlayerCharacter::Throw()
 {
-	EggManager->ThrowEgg();
+	FVector Direction = GetActorUpVector();
+	Direction = Direction.RotateAngleAxis(45, GetActorRightVector());
+	EggManager->ThrowEgg(Direction, ThrowPower);
+}
+
+void APlayerCharacter::Jump()
+{
+	Super::Jump();
+	OnJumpStarted.Broadcast();
 }
