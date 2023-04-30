@@ -3,7 +3,9 @@
 
 #include "FindPlayerService.h"
 
+#include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "LudumDare53/Enemies/EnemyCharacter.h"
 
 UFindPlayerService::UFindPlayerService()
 {
@@ -12,16 +14,13 @@ UFindPlayerService::UFindPlayerService()
 
 void UFindPlayerService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
+	const auto Controller = OwnerComp.GetAIOwner();
 	const auto Blackboard = OwnerComp.GetBlackboardComponent();
-	if (
-		Blackboard &&
-		GetWorld() != nullptr &&
-		GetWorld()->GetFirstPlayerController() != nullptr &&
-		GetWorld()->GetFirstPlayerController()->GetPawn() != nullptr
-	)
-	{
-		Blackboard->SetValueAsObject(PlayerActorKey.SelectedKeyName, GetWorld()->GetFirstPlayerController()->GetPawn());
-	}
 
+	if (Blackboard && Controller)
+	{
+		const auto Enemy = Cast<AEnemyCharacter>(Controller->GetPawn());
+		if (Enemy) Blackboard->SetValueAsObject(PlayerActorKey.SelectedKeyName, Enemy->Target());
+	}
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 }
