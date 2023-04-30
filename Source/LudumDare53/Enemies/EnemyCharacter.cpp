@@ -21,6 +21,7 @@ AEnemyCharacter::AEnemyCharacter()
 	HitPointComponent = CreateDefaultSubobject<UHitPointsComponent>("HP");
 	DeathSequenceComponent = CreateDefaultSubobject<UDeathSequenceComponent>("DeathSequence");
 	SightComponent = CreateDefaultSubobject<USphereComponent>("Sight");
+	SightComponent->SetupAttachment(GetRootComponent());
 
 	if (GetCharacterMovement())
 	{
