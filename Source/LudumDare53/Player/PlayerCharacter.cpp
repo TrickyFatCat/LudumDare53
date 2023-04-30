@@ -96,8 +96,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 
 		//Interact
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this,
+		EnhancedInputComponent->BindAction(InteractAction,
+		                                   ETriggerEvent::Triggered,
+		                                   this,
 		                                   &APlayerCharacter::StartInteraction);
+
+		//ThrowEgg
+		EnhancedInputComponent->BindAction(ThrowAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Throw);
 	}
 }
 
@@ -193,4 +198,9 @@ void APlayerCharacter::ToggleInput(const bool bIsEnabled)
 void APlayerCharacter::StartInteraction()
 {
 	InteractionQueue->StartInteraction();
+}
+
+void APlayerCharacter::Throw()
+{
+	EggManager->ThrowEgg();
 }

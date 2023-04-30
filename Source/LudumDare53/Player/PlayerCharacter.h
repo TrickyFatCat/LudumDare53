@@ -74,6 +74,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* ThrowAction;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess))
 	FVector CameraSensitivity{0.f, 25.f, 25.f};
 
@@ -111,4 +114,6 @@ private:
 	void ToggleInput(const bool bIsEnabled);
 
 	void StartInteraction();
+
+	void Throw();
 };

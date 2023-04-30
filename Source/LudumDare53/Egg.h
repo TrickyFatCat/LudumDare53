@@ -13,6 +13,7 @@ class UCapsuleComponent;
 class UStaticMeshComponent;
 class USphereInteractionComponent;
 class UEggManagerComponent;
+class UFollowAnimationComponent;
 
 UCLASS()
 class LUDUMDARE53_API AEgg : public ACharacter, public IInteractionInterface
@@ -21,8 +22,6 @@ class LUDUMDARE53_API AEgg : public ACharacter, public IInteractionInterface
 
 public:
 	AEgg();
-
-	void SetEggManager(UEggManagerComponent* Manager);
 
 protected:
 	virtual void BeginPlay() override;
@@ -33,12 +32,15 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<USphereInteractionComponent> InteractionTrigger = nullptr;
 
-	UPROPERTY()
-	TObjectPtr<UEggManagerComponent> EggManager = nullptr;
+	UPROPERTY(EditAnywhere)
+	FName Socket = NAME_None;
 
 	virtual bool FinishInteraction_Implementation(AActor* OtherActor) override;
 
+	void ToggleCollision(const bool bIsEnabled) const;
 
 public:
-	void ToggleCollision(const bool bIsEnabled) const;
+	void Attach(AActor* OtherActor, const FName& SocketName);
+
+	void Throw(const FVector& Power);
 };
