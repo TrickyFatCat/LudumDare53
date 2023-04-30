@@ -12,6 +12,8 @@ class UEggHitPointsComponent;
 class UCapsuleComponent;
 class UStaticMeshComponent;
 class USphereInteractionComponent;
+class UEggManagerComponent;
+class UFollowAnimationComponent;
 
 UCLASS()
 class LUDUMDARE53_API AEgg : public ACharacter, public IInteractionInterface
@@ -30,5 +32,15 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<USphereInteractionComponent> InteractionTrigger = nullptr;
 
-	virtual void StartInteraction_Implementation(AActor* OtherActor) override;
+	UPROPERTY(EditAnywhere)
+	FName Socket = NAME_None;
+
+	virtual bool FinishInteraction_Implementation(AActor* OtherActor) override;
+
+	void ToggleCollision(const bool bIsEnabled) const;
+
+public:
+	void Attach(AActor* OtherActor, const FName& SocketName);
+
+	void Throw(const FVector& Power);
 };

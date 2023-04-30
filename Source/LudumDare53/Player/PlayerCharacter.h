@@ -74,17 +74,15 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* ThrowAction;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess))
 	FVector CameraSensitivity{0.f, 25.f, 25.f};
 
 	UPROPERTY(EditAnywhere)
 	float StopJumpVelocityFactor = 0.25;
 
-	bool bJumpWasStopped = false;
-	
-	UPROPERTY(EditAnywhere)
-	float MinJumpVelocity = 400.f;
-	
 	float DefaultGravityScale = 2.0;
 
 	UPROPERTY(EditAnywhere)
@@ -117,7 +115,5 @@ private:
 
 	void StartInteraction();
 
-	virtual void StopJumping() override;
-
-	virtual void Landed(const FHitResult& Hit) override;
+	void Throw();
 };
