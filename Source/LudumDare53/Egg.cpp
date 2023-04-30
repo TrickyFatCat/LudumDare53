@@ -48,9 +48,10 @@ bool AEgg::FinishInteraction_Implementation(AActor* OtherActor)
 	{
 		return false;
 	}
-
+	
 	Attach(OtherActor);
 	EggManager->SetEgg(this);
+	OnEggTaken.Broadcast();
 	return true;
 }
 
@@ -59,6 +60,7 @@ void AEgg::ToggleCollision(const bool bIsEnabled) const
 	const ECollisionEnabled::Type CollisionEnabled = bIsEnabled
 		                                                 ? ECollisionEnabled::QueryAndPhysics
 		                                                 : ECollisionEnabled::NoCollision;
+	MovementComponent->bSimulationEnabled = bIsEnabled;
 	CapsuleComponent->SetCollisionEnabled(CollisionEnabled);
 	InteractionTrigger->SetCollisionEnabled(CollisionEnabled);
 	Mesh->SetCollisionEnabled(CollisionEnabled);
@@ -70,7 +72,7 @@ void AEgg::Attach(const AActor* OtherActor)
 	{
 		return;
 	}
-
+	
 	USkeletalMeshComponent* TargetMesh = OtherActor->FindComponentByClass<USkeletalMeshComponent>();
 
 	if (!TargetMesh)

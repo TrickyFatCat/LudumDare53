@@ -7,7 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "Egg.generated.h"
 
-// class UCharacterMovementComponent;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEggTakenSignature);
+
 class UProjectileMovementComponent;
 class UEggHitPointsComponent;
 class UCapsuleComponent;
@@ -51,6 +52,8 @@ protected:
 	void Attach(const AActor* OtherActor);
 
 public:
-
+	UPROPERTY(BlueprintAssignable)
+	FOnEggTakenSignature OnEggTaken;
+	
 	void Throw(const FVector& Direction, const float Power);
 };
