@@ -24,21 +24,14 @@ void UEggManagerComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UEggManagerComponent::ThrowEgg()
+void UEggManagerComponent::ThrowEgg(const FVector& Direction, const float Power)
 {
-	if (!bIsEggInHands)
+	if (!bIsEggInHands || !IsValid(Egg))
 	{
 		return;
 	}
-
-	FVector Direction = GetOwner()->GetActorUpVector();
-	Direction = Direction.RotateAngleAxis(45, GetOwner()->GetActorRightVector());
-
-	if (IsValid(Egg))
-	{
-		Egg->Throw(Direction, ThrowPower);
-	}
 	
+	Egg->Throw(Direction, Power);
 	bIsEggInHands = false;
 }
 
