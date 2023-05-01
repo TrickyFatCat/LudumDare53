@@ -10,8 +10,10 @@
 #include "LudumDare53/Components/MeatCounterComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameModeSession.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InteractionQueueComponent.h"
+#include "TrickyGameModeLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "LudumDare53/Egg.h"
 #include "LudumDare53/Components/EggManagerComponent.h"
@@ -189,6 +191,7 @@ void APlayerCharacter::HandleRespawn()
 {
 	if (DeathSequence->GetIsGameOver())
 	{
+		UTrickyGameModeLibrary::GetSessionGameMode(GetWorld())->FinishSession(false);
 		return;
 	}
 

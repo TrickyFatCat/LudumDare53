@@ -26,7 +26,13 @@ void AGameplayHUD::BeginPlay()
 			continue;
 		}
 
-		UserWidget->AddToViewport();
+		int32 ZOrder = 0;
+		if (WidgetPair.Key == EGameModeState::InProgress)
+		{
+			ZOrder = -2;
+		}
+		
+		UserWidget->AddToViewport(ZOrder);
 		UserWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 
