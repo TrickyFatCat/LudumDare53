@@ -243,11 +243,6 @@ float APlayerCharacter::TakeDamage(float DamageAmount,
 	LaunchCharacter(Direction * StunComponent->StunPower, true, true);
 	HitPoints->DecreaseValue(DamageAmount);
 	
-	// Direction.X *= -1;
-	// Direction.Y *= -1;
-	// Direction = Direction.RotateAngleAxis(45, GetActorRightVector());
-	// EggManager->ThrowEgg(Direction, StunComponent->ThrowPower);
-	
 	StunComponent->ApplyStun();
 	InvulnerabilityComponent->ApplyStun();
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
