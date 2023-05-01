@@ -33,7 +33,18 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool bHasHat = false;;
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHatChanged(const bool bIsVisible);
+
 public:
+	UFUNCTION(BlueprintCallable)
+	void ToggleHat(const bool bIsVisible);
+
+	bool GetHasHat() const { return bHasHat; }
+	
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -145,4 +156,6 @@ private:
 	void Throw();
 
 	virtual void Jump() override;
+
+
 };

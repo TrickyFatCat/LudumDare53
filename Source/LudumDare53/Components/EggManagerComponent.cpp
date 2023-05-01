@@ -42,5 +42,6 @@ void UEggManagerComponent::SetEgg(AEgg* NewEgg)
 		return;
 	}
 
+	OnEggSet.Broadcast(NewEgg);
 	Egg = NewEgg;
 }
