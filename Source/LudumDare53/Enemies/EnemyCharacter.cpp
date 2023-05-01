@@ -38,19 +38,19 @@ void AEnemyCharacter::BeginPlay()
 	HitPointComponent->OnValueZero.AddDynamic(this, &AEnemyCharacter::Die);
 }
 
-AActor* AEnemyCharacter::Target() const
+AActor* AEnemyCharacter::FindTarget(const TSubclassOf<AActor> Class) const
 {
 	TArray<AActor*> FindActors;
-	SightComponent->GetOverlappingActors(FindActors, APlayerCharacter::StaticClass());
+	SightComponent->GetOverlappingActors(FindActors, Class);
 	return FindActors.IsEmpty() ? nullptr : FindActors[0];
 }
 
 void AEnemyCharacter::Die()
 {
 	if (const auto AIController = Cast<AEnemyController>(GetController())) AIController->BrainComponent->Cleanup();
-	
+
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	DeathSequenceComponent->StartDeathSequence();
+	DeathSequenceComponent->StartDeathSequence(false);
 }
 
 float AEnemyCharacter::TakeDamage(

@@ -25,10 +25,10 @@ public:
 	FOnAbilityDeactivatedSignature OnAbilityDeactivated;
 
 	UFUNCTION(BlueprintCallable, Category="Ability")
-	bool ActivateAbility();
+	virtual bool ActivateAbility();
 
 	UFUNCTION(BlueprintCallable, Category="Ability")
-	bool DeactivateAbility();
+	virtual bool DeactivateAbility();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category="Ability")

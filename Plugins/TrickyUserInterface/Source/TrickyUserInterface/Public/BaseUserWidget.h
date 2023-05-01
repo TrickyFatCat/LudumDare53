@@ -10,6 +10,17 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnShowedSignature);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHiddenSignature);
 
+UENUM(BlueprintType)
+enum class ETimeFormat : uint8
+{
+	MM_SS_MsMs UMETA(DisplayName="MM:SS.MsMs"),
+	MM_SS_Ms UMETA(DisplayName="MM:SS.Ms"),
+	MM_SS UMETA(DisplayName="MM:SS"),
+	SS_MsMs UMETA(DisplayName="SS.MsMs"),
+	SS_Ms UMETA(DisplayName="SS.Ms"),
+	SS UMETA(DisplayName="SS")
+};
+
 /**
  * Base user widget.
  */
@@ -36,6 +47,9 @@ public:
 	/**Called when the hide animation finishes.*/
 	UPROPERTY(BlueprintAssignable, Category="Animation")
 	FOnHiddenSignature OnHidden;
+
+	UFUNCTION(BlueprintPure)
+	static FString ConvertTimeSeconds(const float TimeSeconds, const ETimeFormat TimeFormat);
 
 protected:
 	UPROPERTY(Transient, meta=(BindWidgetAnim))

@@ -12,8 +12,12 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InteractionQueueComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "LudumDare53/Egg.h"
 #include "LudumDare53/Components/EggManagerComponent.h"
 #include "LudumDare53/Components/PlayerDeathSequenceComponent.h"
+#include "LudumDare53/Components/StarsCounterComponent.h"
+#include "LudumDare53/Components/StunComponent.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -34,6 +38,9 @@ APlayerCharacter::APlayerCharacter()
 	DeathSequence = CreateDefaultSubobject<UPlayerDeathSequenceComponent>("DeathSequence");
 	InteractionQueue = CreateDefaultSubobject<UInteractionQueueComponent>("InteractionQueue");
 	EggManager = CreateDefaultSubobject<UEggManagerComponent>("EggManager");
+	StarsCounter = CreateDefaultSubobject<UStarsCounterComponent>("StarsCounter");
+	StunComponent = CreateDefaultSubobject<UStunComponent>("StunComponent");
+	InvulnerabilityComponent = CreateDefaultSubobject<UStunComponent>("InvulnerabilityComponent");
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -52,6 +59,20 @@ void APlayerCharacter::BeginPlay()
 	LivesComponent->OnValueDecreased.AddDynamic(this, &APlayerCharacter::HandleLivesDecrease);
 	DeathSequence->OnRespawnFinished.AddDynamic(this, &APlayerCharacter::HandleRespawn);
 	DefaultGravityScale = GetCharacterMovement()->GravityScale;
+	StunComponent->OnStunStarted.AddDynamic(this, &APlayerCharacter::HandleStunStarted);
+	StunComponent->OnStunFinished.AddDynamic(this, &APlayerCharacter::HandleStunFinished);
+
+	AEgg* Egg = EggManager->GetEgg();
+
+	if (Egg)
+	{
+		UHitPointsComponent* HitPointsComponent = Egg->FindComponentByClass<UHitPointsComponent>();
+
+		if (HitPointsComponent)
+		{
+			HitPointsComponent->OnValueZero.AddDynamic(this, &APlayerCharacter::HandleEggDeath);
+		}
+	}
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -151,10 +172,17 @@ void APlayerCharacter::HandleMeatCounterIncrease(const int32 NewValue, const int
 
 void APlayerCharacter::HandleLivesDecrease(const int32 NewValue, const int32 Amount)
 {
+	StunComponent->StopStun();
 	DeathSequence->SetIsGameOver(LivesComponent->GetValue() == 0);
-	DeathSequence->StartDeathSequence();
+	DeathSequence->StartDeathSequence(bIsEggDestroyed);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ToggleInput(false);
+}
+
+void APlayerCharacter::HandleEggDeath()
+{
+	bIsEggDestroyed = true;
+	LivesComponent->DecreaseValue(1);
 }
 
 void APlayerCharacter::HandleRespawn()
@@ -164,7 +192,22 @@ void APlayerCharacter::HandleRespawn()
 		return;
 	}
 
-	HitPoints->IncreaseValue(HitPoints->GetMaxValue());
+	const FName LevelName = *UGameplayStatics::GetCurrentLevelName(GetWorld());
+	UGameplayStatics::OpenLevel(GetWorld(), LevelName);
+}
+
+void APlayerCharacter::HandleStunStarted()
+{
+	ToggleInput(false);
+}
+
+void APlayerCharacter::HandleStunFinished()
+{
+	if (HitPoints->GetValue() <= 0)
+	{
+		return;
+	}
+	
 	ToggleInput(true);
 }
 
@@ -173,13 +216,41 @@ float APlayerCharacter::TakeDamage(float DamageAmount,
                                    AController* EventInstigator,
                                    AActor* DamageCauser)
 {
-	HitPoints->DecreaseValue(DamageAmount);
+	FVector Direction = GetActorLocation();
+ 
+ 	if (DamageCauser)
+ 	{
+ 		Direction = Direction - DamageCauser->GetActorLocation();
+ 		Direction = Direction.GetUnsafeNormal();
+ 		Direction.Z = 1.0;
+ 	}
+ 	else
+ 	{
+ 		Direction = FVector::UpVector  + GetActorForwardVector() * -1;
+ 	}
 
+	FVector EggDirection = Direction;
+	EggDirection.X *= -1;
+	EggDirection.Y *= -1;
+	EggDirection = EggDirection.RotateAngleAxis(45, GetActorRightVector());
+	EggManager->ThrowEgg(EggDirection, StunComponent->ThrowPower);
+	
+	if (InvulnerabilityComponent->GetIsStunned())
+	{
+		return 0.f;
+	}
+	
+	LaunchCharacter(Direction * StunComponent->StunPower, true, true);
+	HitPoints->DecreaseValue(DamageAmount);
+	
+	StunComponent->ApplyStun();
+	InvulnerabilityComponent->ApplyStun();
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void APlayerCharacter::FellOutOfWorld(const UDamageType& dmgType)
 {
+	InvulnerabilityComponent->StopStun();
 	HitPoints->DecreaseValue(HitPoints->GetValue());
 }
 
@@ -202,5 +273,14 @@ void APlayerCharacter::StartInteraction()
 
 void APlayerCharacter::Throw()
 {
-	EggManager->ThrowEgg();
+	FVector Direction = GetActorUpVector();
+	Direction = Direction.RotateAngleAxis(45, GetActorRightVector());
+	EggManager->ThrowEgg(Direction, ThrowPower);
+
+}
+
+void APlayerCharacter::Jump()
+{
+	Super::Jump();
+	OnJumpStarted.Broadcast();
 }

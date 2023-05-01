@@ -17,6 +17,10 @@ class UInputMappingContext;
 class UInputAction;
 class UInteractionQueueComponent;
 class UEggManagerComponent;
+class UStarsCounterComponent;
+class UStunComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnJumpStartedSignature);
 
 UCLASS()
 class LUDUMDARE53_API APlayerCharacter : public ACharacter
@@ -33,6 +37,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnJumpStartedSignature OnJumpStarted;
 
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category="Components")
@@ -59,6 +66,15 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UEggManagerComponent> EggManager = nullptr;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStarsCounterComponent> StarsCounter = nullptr;
+	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStunComponent> StunComponent = nullptr;
+ 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStunComponent> InvulnerabilityComponent = nullptr;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* MappingContext;
 
@@ -80,13 +96,15 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess))
 	FVector CameraSensitivity{0.f, 25.f, 25.f};
 
-	UPROPERTY(EditAnywhere)
-	float StopJumpVelocityFactor = 0.25;
-
 	float DefaultGravityScale = 2.0;
 
 	UPROPERTY(EditAnywhere)
 	float GravityScaleDelta = 1.0;
+
+	UPROPERTY(EditAnywhere)
+	float ThrowPower = 1250;
+
+	bool bIsEggDestroyed = false;
 
 	void Move(const FInputActionValue& Value);
 
@@ -102,7 +120,16 @@ private:
 	void HandleLivesDecrease(const int32 NewValue, const int32 Amount);
 
 	UFUNCTION()
+	void HandleEggDeath();
+	
+	UFUNCTION()
 	void HandleRespawn();
+
+	UFUNCTION()
+	void HandleStunStarted();
+	
+	UFUNCTION()
+	void HandleStunFinished();
 
 	virtual float TakeDamage(float DamageAmount,
 	                         FDamageEvent const& DamageEvent,
@@ -116,4 +143,6 @@ private:
 	void StartInteraction();
 
 	void Throw();
+
+	virtual void Jump() override;
 };

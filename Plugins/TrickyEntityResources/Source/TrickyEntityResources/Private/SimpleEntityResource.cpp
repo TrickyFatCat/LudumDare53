@@ -115,3 +115,9 @@ void USimpleEntityResource::GetResourceData(FSimpleResourceData& Data) const
 {
 	Data = ResourceData;
 }
+
+void USimpleEntityResource::SetValue(const int32 NewValue)
+{
+	ResourceData.Value = NewValue;
+	OnValueIncreased.Broadcast(NewValue, NewValue);
+}

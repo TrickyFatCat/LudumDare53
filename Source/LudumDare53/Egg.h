@@ -7,13 +7,15 @@
 #include "GameFramework/Actor.h"
 #include "Egg.generated.h"
 
-// class UCharacterMovementComponent;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEggTakenSignature);
+
 class UProjectileMovementComponent;
 class UEggHitPointsComponent;
 class UCapsuleComponent;
 class UStaticMeshComponent;
 class USphereInteractionComponent;
 class UEggManagerComponent;
+class UStunComponent;
 
 UCLASS()
 class LUDUMDARE53_API AEgg : public AActor, public IInteractionInterface
@@ -28,18 +30,24 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UCapsuleComponent> CapsuleComponent = nullptr;
-	
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UStaticMeshComponent> Mesh = nullptr;
-	
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UProjectileMovementComponent> MovementComponent = nullptr;
-	
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UEggHitPointsComponent> HitPoints = nullptr;
-	
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<USphereInteractionComponent> InteractionTrigger = nullptr;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UStunComponent> StunComponent = nullptr;
+
+	UFUNCTION()
+	void HandleLanding(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
 
 	UPROPERTY(EditAnywhere)
 	FName SocketName = NAME_None;
@@ -48,9 +56,19 @@ protected:
 
 	void ToggleCollision(const bool bIsEnabled) const;
 
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnEggTakenSignature OnEggTaken;
+
+	UFUNCTION(BlueprintCallable)
+	void Throw(const FVector& Direction, const float Power);
+
 	void Attach(const AActor* OtherActor);
 
-public:
-
-	void Throw(const FVector& Direction, const float Power);
+private:
+	virtual float TakeDamage(float DamageAmount,
+	                         FDamageEvent const& DamageEvent,
+	                         AController* EventInstigator,
+	                         AActor* DamageCauser) override;
+	virtual void FellOutOfWorld(const UDamageType& dmgType) override;
 };
