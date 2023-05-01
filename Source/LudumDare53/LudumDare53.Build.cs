@@ -15,7 +15,8 @@ public class LudumDare53 : ModuleRules
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]
-			{ "TrickyEntityResources", "EnhancedInput", "TrickyPickups", "TrickyAnimationComponents", "TrickyDoors", "TrickyInteractionSystem" });
+			{ "TrickyEntityResources", "EnhancedInput", "TrickyPickups", "TrickyAnimationComponents", "TrickyDoors", "TrickyInteractionSystem", "TrickyGameMode"
+			});
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
