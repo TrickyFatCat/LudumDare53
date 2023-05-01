@@ -74,7 +74,4 @@ protected:
 	void OnTransitionScreenShowed();
 
 	virtual void OnTransitionScreenShowed_Implementation();
-
-	UFUNCTION()
-	void HandleTransitionShow();
 };
