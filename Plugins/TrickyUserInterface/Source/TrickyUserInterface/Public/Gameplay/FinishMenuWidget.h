@@ -29,7 +29,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="FinishScreen", meta=(BindWidget))
 	TObjectPtr<UButtonWidget> Button_Quit = nullptr;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UButtonWidget> ClickedButton = nullptr;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="FinishScreen", meta=(BindWidget))
@@ -74,4 +74,7 @@ protected:
 	void OnTransitionScreenShowed();
 
 	virtual void OnTransitionScreenShowed_Implementation();
+
+	UFUNCTION()
+	void HandleTransitionShow();
 };
