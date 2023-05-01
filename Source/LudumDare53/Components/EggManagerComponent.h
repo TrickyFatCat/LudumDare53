@@ -9,6 +9,8 @@
 class AEgg;
 class USkeletalMeshComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEggSetSignature, AEgg*, Egg);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class LUDUMDARE53_API UEggManagerComponent : public UActorComponent
 {
@@ -23,6 +25,9 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	UPROPERTY(BlueprintAssignable)
+	FOnEggSetSignature OnEggSet;
+	
 	UFUNCTION()
 	void ThrowEgg(const FVector& Direction, const float Power);
 
