@@ -4,6 +4,7 @@
 #include "BaseUserWidget.h"
 
 #include "Animation/WidgetAnimation.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void UBaseUserWidget::NativeOnInitialized()
 {
@@ -29,7 +30,7 @@ FString UBaseUserWidget::ConvertTimeSeconds(const float TimeSeconds, const ETime
 	FString Result = "";
 
 	const int32 TotalMinutes = static_cast<int32>(Timespan.GetTotalMinutes());
-	const int32 Seconds = FMath::CeilToInt(Timespan.GetSeconds());
+	const int32 Seconds = Timespan.GetSeconds();
 	const int32 TotalSeconds = (FMath::CeilToInt(Timespan.GetTotalSeconds()));
 	const int32 Milliseconds = Timespan.GetFractionMilli();
 
