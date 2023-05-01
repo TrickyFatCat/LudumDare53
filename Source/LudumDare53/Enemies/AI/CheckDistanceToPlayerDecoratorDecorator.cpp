@@ -10,7 +10,11 @@ bool UCheckDistanceToPlayerDecorator::CalculateRawConditionValue(UBehaviorTreeCo
 {
 	const auto Blackboard = OwnerComp.GetBlackboardComponent();
 	const auto Obj = Blackboard->GetValueAsObject(PlayerActorKey.SelectedKeyName);
-	if (Obj == nullptr) return  false;
+	if (Obj == nullptr) return false;
 	const auto Player = Cast<APawn>(Obj);
-	return FVector::Distance(OwnerComp.GetAIOwner()->GetOwner()->GetActorLocation(), Player->GetActorLocation()) >= Distance;
+	if (Player == nullptr) return false;
+	const auto Enemy = OwnerComp.GetAIOwner()->GetInstigatorController()->GetPawn();
+	if (Enemy == nullptr) return false;
+	auto const DistanceD = FVector::Dist(Enemy->GetActorLocation(), Player->GetActorLocation());
+	return DistanceD >= Distance;
 }
