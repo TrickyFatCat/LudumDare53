@@ -41,7 +41,8 @@ void ULevelTeleportComponent::StartTeleportation()
 
 	if (GameModeSession)
 	{
-		GameModeSession->FinishSession(true);
+		// GameModeSession->FinishSession(true);
+		GameModeSession->StartSession();
 	}
 	
 	if (!TransitionScreenWidget)
