@@ -86,6 +86,7 @@ void AEgg::ToggleCollision(const bool bIsEnabled) const
 	if (!bIsEnabled)
 	{
 		InteractionTrigger->SetCollisionEnabled(CollisionEnabled);
+		CapsuleComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel14, ECR_Ignore);
 	}
 }
 
@@ -112,6 +113,7 @@ void AEgg::Attach(const AActor* OtherActor)
 void AEgg::HandleLanding(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
 {
 	InteractionTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	CapsuleComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel14, ECollisionResponse::ECR_Block);
 }
 
 void AEgg::Throw(const FVector& Direction, const float Power)
