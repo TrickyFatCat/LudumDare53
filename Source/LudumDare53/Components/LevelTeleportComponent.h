@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "LevelTeleportComponent.generated.h"
 
+class UTransitionScreenWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTeleportationStartedSignatue);
 
