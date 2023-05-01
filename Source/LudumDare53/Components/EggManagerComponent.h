@@ -34,7 +34,8 @@ public:
 	void SetEgg(AEgg* NewEgg);
 
 	AEgg* GetEgg() const { return Egg; }
-	
+
+	UPROPERTY(BlueprintReadOnly)
 	bool bIsEggInHands = false;
 	
 protected:
