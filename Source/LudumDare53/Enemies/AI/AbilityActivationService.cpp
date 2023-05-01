@@ -6,7 +6,6 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "LudumDare53/Components/AbilityComponent.h"
-#include "LudumDare53/Enemies/EnemyCharacter.h"
 
 UAbilityActivationService::UAbilityActivationService()
 {
