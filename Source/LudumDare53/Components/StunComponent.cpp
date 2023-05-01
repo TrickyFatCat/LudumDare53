@@ -21,7 +21,8 @@ bool UStunComponent::ApplyStun()
 	{
 		return false;
 	}
-	
+
+	bIsStunned = true;
 	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
 	TimerManager.SetTimer(StunTimerHandle, this, &UStunComponent::FinishStun, StunTime, false);
 	OnStunStarted.Broadcast();
