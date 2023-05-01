@@ -25,11 +25,11 @@ void UPlayerDeathSequenceComponent::BeginPlay()
 	Super::BeginPlay();
 
 	InitialTransform = GetOwner()->GetActorTransform();
-	
+
 	if (TransitionWidgetClass)
 	{
 		TransitionScreenWidget = CreateWidget<UTransitionScreenWidget>(GetWorld(), TransitionWidgetClass);
-		TransitionScreenWidget->AddToViewport();
+		TransitionScreenWidget->AddToViewport(-1);
 		TransitionScreenWidget->SetVisibility(ESlateVisibility::Hidden);
 		TransitionScreenWidget->OnShowed.AddDynamic(this, &UPlayerDeathSequenceComponent::FinishRestart);
 	}
@@ -38,17 +38,12 @@ void UPlayerDeathSequenceComponent::BeginPlay()
 void UPlayerDeathSequenceComponent::HandleDeathSequenceFinish()
 {
 	Super::HandleDeathSequenceFinish();
-	
-	if (!TransitionScreenWidget || bIsGameOver)
+
+	if (!TransitionScreenWidget)
 	{
 		return;
 	}
 
-	if (bIsGameOver)
-	{
-		return;
-	}
-	
 	TransitionScreenWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 	TransitionScreenWidget->Show();
 }
@@ -56,8 +51,10 @@ void UPlayerDeathSequenceComponent::HandleDeathSequenceFinish()
 
 void UPlayerDeathSequenceComponent::FinishRestart()
 {
-	GetOwner()->SetActorTransform(InitialTransform);
-	Character->GetMesh()->bPauseAnims = false;
 	OnRespawnFinished.Broadcast();
-	TransitionScreenWidget->Hide();
+
+	if (!bIsGameOver)
+	{
+		TransitionScreenWidget->Hide();
+	}
 }
