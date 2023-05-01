@@ -47,6 +47,7 @@ bool AEggFinish::FinishInteraction_Implementation(AActor* OtherActor)
 	Egg->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	Egg->AttachToActor(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	Egg->SetActorLocation(EggPoint->GetComponentLocation());
+	InteractionTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	OnEggPlaced.Broadcast();
 	OnEggWasPlaced();
 	return true;
