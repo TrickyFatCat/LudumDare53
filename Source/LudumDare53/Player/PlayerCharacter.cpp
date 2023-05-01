@@ -86,6 +86,12 @@ void APlayerCharacter::BeginPlay()
 	}
 }
 
+void APlayerCharacter::ToggleHat(const bool bIsVisible)
+{
+	bHasHat = bIsVisible;
+	OnHatChanged(bHasHat);
+}
+
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
