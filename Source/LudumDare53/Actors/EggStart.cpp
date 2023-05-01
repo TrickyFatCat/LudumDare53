@@ -21,12 +21,15 @@ void AEggStart::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AEgg* Egg = GetWorld()->SpawnActor<AEgg>(EggClass, SpawnPoint->GetComponentTransform());
-
+	// AEgg* Egg = GetWorld()->SpawnActor<AEgg>(EggClass, SpawnPoint->GetComponentTransform());
+	AEgg* Egg = GetWorld()->SpawnActorDeferred<AEgg>(EggClass, SpawnPoint->GetComponentTransform());
+ 
 	if (Egg)
 	{
 		Egg->OnEggTaken.AddDynamic(this, &AEggStart::HandleEggTaken);
 	}
+
+	Egg->FinishSpawning( SpawnPoint->GetComponentTransform());
 }
 
 void AEggStart::HandleEggTaken()
