@@ -13,7 +13,8 @@ enum class EGameModeState : uint8
 	Preparation,
 	InProgress,
 	Pause,
-	Finished
+	Finished,
+	GameOver,
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStateChangedSignature, EGameModeState, NewState);

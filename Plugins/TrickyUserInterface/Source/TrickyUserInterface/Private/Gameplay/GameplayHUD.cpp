@@ -14,7 +14,7 @@ void AGameplayHUD::BeginPlay()
 	CreateUserWidget(EGameModeState::Preparation, PreparationScreenWidget);
 	CreateUserWidget(EGameModeState::InProgress, GameplayScreenWidget);
 	CreateUserWidget(EGameModeState::Pause, PauseScreenWidget);
-	CreateUserWidget(EGameModeState::Finished, FinishScreenWidget);
+	CreateUserWidget(EGameModeState::GameOver, FinishScreenWidget);
 
 	
 	for (const auto WidgetPair : UserWidgets)

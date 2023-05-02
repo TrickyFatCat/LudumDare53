@@ -73,7 +73,7 @@ void AGameModeSession::StartSession()
 
 void AGameModeSession::FinishSession(const bool bIsVictory)
 {
-	SetState(EGameModeState::Finished);
+	SetState(bIsVictory ? EGameModeState::Finished : EGameModeState::GameOver);
 
 	FinalTime = bLimitSessionTime ? GetSessionRemainingTime() : GetSessionElapsedTime();
 

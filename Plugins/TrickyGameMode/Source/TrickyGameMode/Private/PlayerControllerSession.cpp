@@ -45,8 +45,11 @@ void APlayerControllerSession::OnGameModeStateChanged_Implementation(EGameModeSt
 		break;
 
 	case EGameModeState::Finished:
-		ToggleInput(false, true, FInputModeUIOnly());
+		ToggleInput(false, false, FInputModeGameOnly());
 		break;
+
+	case EGameModeState::GameOver:
+		ToggleInput(false, true, FInputModeUIOnly());
 
 	case EGameModeState::Pause:
 		ToggleInput(true, true, FInputModeGameAndUI());
