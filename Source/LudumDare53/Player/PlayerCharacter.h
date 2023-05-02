@@ -104,6 +104,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* ThrowAction;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* PauseAction;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess))
 	FVector CameraSensitivity{0.f, 25.f, 25.f};
 
@@ -142,6 +145,9 @@ private:
 	UFUNCTION()
 	void HandleStunFinished();
 
+	UFUNCTION()
+	void HandlePause();
+
 	virtual float TakeDamage(float DamageAmount,
 	                         FDamageEvent const& DamageEvent,
 	                         AController* EventInstigator,
@@ -157,5 +163,5 @@ private:
 
 	virtual void Jump() override;
 
-
+	
 };

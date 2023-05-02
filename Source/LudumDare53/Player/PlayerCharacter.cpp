@@ -13,6 +13,7 @@
 #include "GameModeSession.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InteractionQueueComponent.h"
+#include "PlayerControllerSession.h"
 #include "TrickyGameModeLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "LudumDare53/Egg.h"
@@ -132,6 +133,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		//ThrowEgg
 		EnhancedInputComponent->BindAction(ThrowAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Throw);
+
+		//Pause
+		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Started, this, &APlayerCharacter::HandlePause);
 	}
 }
 
@@ -218,6 +222,16 @@ void APlayerCharacter::HandleStunFinished()
 	}
 	
 	ToggleInput(true);
+}
+
+void APlayerCharacter::HandlePause()
+{
+	APlayerControllerSession* SessionController = Cast<APlayerControllerSession>(GetController());
+
+	if (SessionController)
+	{
+		SessionController->PauseGame();
+	}
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount,

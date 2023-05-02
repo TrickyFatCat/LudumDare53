@@ -33,6 +33,7 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, Category="Controller")
 	void OnGameModeStateChanged(EGameModeState NewState);
 
+public:
 	/**
 	 * Pauses the game
 	 */
