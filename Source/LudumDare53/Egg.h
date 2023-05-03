@@ -49,8 +49,13 @@ protected:
 	UFUNCTION()
 	void HandleLanding(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
 
+	UFUNCTION()
+	void HandleFinishSimulation(const FHitResult& HitResult);
+
 	UPROPERTY(EditAnywhere)
 	FName SocketName = NAME_None;
+
+	bool bIsAttached = false;
 
 	virtual bool FinishInteraction_Implementation(AActor* OtherActor) override;
 

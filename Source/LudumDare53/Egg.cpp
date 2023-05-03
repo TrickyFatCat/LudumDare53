@@ -52,6 +52,7 @@ void AEgg::BeginPlay()
 	}
 
 	MovementComponent->OnProjectileBounce.AddDynamic(this, &AEgg::HandleLanding);
+	MovementComponent->OnProjectileStop.AddDynamic(this, &AEgg::HandleFinishSimulation);
 }
 
 bool AEgg::FinishInteraction_Implementation(AActor* OtherActor)
@@ -104,6 +105,7 @@ void AEgg::Attach(const AActor* OtherActor)
 		return;
 	}
 
+	bIsAttached = true;
 	ToggleCollision(false);
 	const FHitResult HitResult;
 	MovementComponent->StopSimulating(HitResult);
@@ -116,8 +118,20 @@ void AEgg::HandleLanding(const FHitResult& ImpactResult, const FVector& ImpactVe
 	CapsuleComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel14, ECollisionResponse::ECR_Block);
 }
 
+void AEgg::HandleFinishSimulation(const FHitResult& HitResult)
+{
+	if (bIsAttached)
+	{
+		return; 
+	}
+	
+	MovementComponent->SetUpdatedComponent(GetRootComponent());
+}
+
+
 void AEgg::Throw(const FVector& Direction, const float Power)
 {
+	bIsAttached = false;
 	MovementComponent->InitialSpeed = Power;
 	ToggleCollision(true);
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
