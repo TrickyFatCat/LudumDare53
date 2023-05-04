@@ -82,7 +82,7 @@ void ULeaderboardWidget::RenderLeaderboard(FHttpRequestPtr Request, FHttpRespons
 
 	RowsBox->ClearChildren();
 
-	for (const auto Player : JsonValue->AsArray())
+	for (const auto& Player : JsonValue->AsArray())
 	{
 		ULeaderboardRowWidget* Row = CreateWidget<ULeaderboardRowWidget>(this, LeaderboardRowWidgetClass);
 		Row->SetData(

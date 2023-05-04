@@ -54,7 +54,7 @@ bool UEntityResource::DecreaseValue(const float Amount)
 
 bool UEntityResource::IncreaseValue(const float Amount, const bool bClampToMax)
 {
-	if (Amount <= 0.f || ResourceData.Value >= ResourceData.MaxValue && bClampToMax)
+	if (Amount <= 0.f || (ResourceData.Value >= ResourceData.MaxValue && bClampToMax))
 	{
 		return false;
 	}

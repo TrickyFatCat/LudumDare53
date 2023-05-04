@@ -28,7 +28,7 @@ bool USimpleEntityResource::DecreaseValue(const int32 Amount)
 
 bool USimpleEntityResource::IncreaseValue(const int32 Amount, bool bClampToMax)
 {
-	if (Amount <= 0 || ResourceData.Value >= ResourceData.MaxValue && bClampToMax)
+	if (Amount <= 0 || (ResourceData.Value >= ResourceData.MaxValue && bClampToMax))
 	{
 		return false;
 	}
@@ -55,7 +55,7 @@ bool USimpleEntityResource::DecreaseMaxValue(int32 Amount,const bool bClampValue
 	ResourceData.MaxValue = FMath::Max(ResourceData.MaxValue, 0);
 	OnMaxValueDecreased.Broadcast(ResourceData.MaxValue, Amount);
 
-	if (bClampValue && ResourceData.Value > ResourceData.MaxValue)
+	if (bClampValue && (ResourceData.Value > ResourceData.MaxValue))
 	{
 		Amount = FMath::Abs(ResourceData.MaxValue - ResourceData.Value);
 		DecreaseValue(Amount);
