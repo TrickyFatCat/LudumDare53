@@ -33,6 +33,7 @@ void UEggManagerComponent::ThrowEgg(const FVector& Direction, const float Power)
 	
 	Egg->Throw(Direction, Power);
 	bIsEggInHands = false;
+	OnEggThrown.Broadcast();
 }
 
 void UEggManagerComponent::SetEgg(AEgg* NewEgg)
